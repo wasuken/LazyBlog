@@ -21,15 +21,15 @@ class PageTagsTableSeeder extends Seeder
         $page_tags = [
             [
                 'page_id' => $page->id,
-                'tag_id' => $tag_js,
+                'tag_id' => $tag_js->id,
             ],
             [
                 'page_id' => $page->id,
-                'tag_id' => $tag_php,
+                'tag_id' => $tag_php->id,
             ],
             [
                 'page_id' => $page->id,
-                'tag_id' => $tag_ruby,
+                'tag_id' => $tag_ruby->id,
             ],
         ];
 

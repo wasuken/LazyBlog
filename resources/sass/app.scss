@@ -1,2 +1,16 @@
-//
+// Fonts
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+// Variables
+@import 'variables';
+
 @import '~bulma/bulma';
+// Bootstrap
+// @import '~bootstrap/scss/bootstrap';
+
+.hover-press{
+	&:hover{
+		border-bottom-color: transparent;
+		transform: translateY(0.1875em);
+	}
+}

@@ -11,4 +11,8 @@
 |
 */
 
-// Route::get('/', 'PagesController@index');
+Route::get('/', 'PageController@index');
+Route::get('/pages', 'PageController@index');
+Route::get('/page', 'PageController@show');
+
+Auth::routes();

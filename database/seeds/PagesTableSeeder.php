@@ -28,7 +28,32 @@ class PagesTableSeeder extends Seeder
             ],
             [
                 'title' => '今日のうんち3',
+                'body' => Str::random(3000),
+                'user_id' => $user_admin->id,
+            ],
+            [
+                'title' => '今日のうんち4',
+                'body' => Str::random(3000),
+                'user_id' => $user_admin->id,
+            ],
+            [
+                'title' => '今日のうんち5',
                 'body' => 'うんちブリブリ',
+                'user_id' => $user_writer->id,
+            ],
+            [
+                'title' => '今日のうんち6',
+                'body' => 'うんちブリブリ',
+                'user_id' => $user_admin->id,
+            ],
+            [
+                'title' => '今日のうんち7',
+                'body' => Str::random(3000),
+                'user_id' => $user_admin->id,
+            ],
+            [
+                'title' => '今日のうんち8',
+                'body' => Str::random(3000),
                 'user_id' => $user_admin->id,
             ],
         ];
