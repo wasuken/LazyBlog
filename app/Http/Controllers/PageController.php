@@ -28,7 +28,7 @@ class PageController extends Controller
     public function show(Request $req)
     {
         $req->validate([
-            'id' => 'required|unique:pages,page_id'
+            'id' => 'required|exists:pages,id',
         ]);
         $page = \App\Page::find($req->id);
         $comments = \App\PageComment::where('page_id', $page->id);

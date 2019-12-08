@@ -36,7 +36,7 @@
 	<div>
 		@php
 		$params = [];
-		if(isset($writer)) $params['domain'] = $writer;
+		if(isset($writer)) $params['writer'] = $writer;
 		// if(isset($q)) $params['q'] = $q;
 		@endphp
 		{{$pages->appends($params)->links('vendor.pagination.default')}}

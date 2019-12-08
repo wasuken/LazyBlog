@@ -32,19 +32,25 @@ use \App\User;
 					<a class="navbar-item" href="/links">links</a>
 				</div>
 				<div class="navbar-end">
-					<div class="navbar-item">
-						<div class="buttons">
-							@guest
+					<div class="buttons">
+						@guest
+						<div class="navbar-item">
 							<a class="button is-primary" href="/login">login</a>
+						</div>
 							@else
-							<a class="button is-light" href="/page/create">post</a>
+						<div class="navbar-item">
+							<a class="button is-primary" href="/page/create">post</a>
+						</div>
+						<div class="navbar-item">
+							<a class="button is-primary" href="javascript:void(0)">{{Auth::user()->name}}</a>
+						</div>
+						<div class="navbar-item">
 							<form action="/logout" method="POST">
 								@csrf
-								<input class="button is-light" type="submit" value="logout"/>
+								<input class="button is-primary" type="submit" value="logout"/>
 							</form>
-							<a class="button is-light" href="javascript:void(0)">{{Auth::user()->name}}</a>
-							@endguest
 						</div>
+						@endguest
 					</div>
 				</div>
 			</nav>
