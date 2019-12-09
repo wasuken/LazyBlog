@@ -26,6 +26,7 @@ class PagesTest extends TestCase
         $this->seed("UserRoleTableSeeder");
         $this->seed("TagsTableSeeder");
         $this->seed("PageTagsTableSeeder");
+        $this->seed("PageAccessLogsTableSeeder");
         $this->user = \App\User::where('name', 'test_admin')->first();
     }
     public function testBasic()

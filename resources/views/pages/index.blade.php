@@ -61,5 +61,13 @@
 				{{$pages->appends($params)->links('vendor.pagination.default')}}
 			</div>
 		</div>
+		<div style="width:40%;float:left;">
+			<div class="box">
+				<h3>人気記事</h3>
+				<div class="content">
+
+				</div>
+			</div>
+		</div>
 	</div>
 @endsection

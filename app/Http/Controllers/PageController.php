@@ -15,6 +15,7 @@ class PageController extends Controller
             'writer' => 'exists:users,name',
         ]);
         $pages = DB::table('pages');
+        // $page_mosts = \App\User::where('');
         $all_comments = \App\PageComment::all();
         if(isset($req->writer)){
             $pages = $pages
