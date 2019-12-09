@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class PageController extends Controller
 {
@@ -22,7 +23,7 @@ class PageController extends Controller
                    ->where('users.name', $req->writer);
         }
         return view('pages.index', [
-            'pages' => $pages->orderBy('created_at')->paginate(15),
+            'pages' => $pages->orderBy('created_at', 'desc')->paginate(15),
             'writer' => $req->writer,
             'all_comments' => $all_comments,
         ]);
@@ -40,5 +41,36 @@ class PageController extends Controller
               ->where('page_tags.page_id', $page->id)
               ->get();
         return view('pages.show', ['page' => $page, 'comments' => $comments, 'tags' => $tags]);
+    }
+    public function create()
+    {
+        return view('pages.create', []);
+    }
+    public function store(Request $req)
+    {
+        $req->validate([
+            'title' => 'required|min:1|max:200|unique:pages,title',
+            'body' => 'required|min:1',
+            'tags' => 'required|array'
+        ]);
+        $page = \App\Page::create([
+            'title' => $req->title,
+            'body' => $req->body,
+            'user_id' => Auth::user()->id,
+        ]);
+        foreach($req->tags as $tag){
+            $target_tag = \App\Tag::where('name', $tag)->first();
+            if($target_tag === null){
+                $target_tag = \App\Tag::create([
+                    'name' => $tag,
+                ]);
+            }
+            \App\PageTag::create([
+                'page_id' => $page->id,
+                'tag_id' => $target_tag->id,
+            ]);
+        }
+
+        return redirect('/');
     }
 }

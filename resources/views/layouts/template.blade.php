@@ -28,9 +28,9 @@ use \App\User;
 				<div class="navbar-brand">
 					<a class="navbar-item" href="/">{{config('app.name', 'Laravel')}}</a>
 				</div>
-				<div class="navbar-menu">
-					<a class="navbar-item" href="/links">links</a>
-				</div>
+				<!-- <div class="navbar-menu">
+					 <a class="navbar-item" href="/links">links</a>
+					 </div> -->
 				<div class="navbar-end">
 					<div class="buttons">
 						@guest

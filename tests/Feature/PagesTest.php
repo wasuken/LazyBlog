@@ -113,9 +113,60 @@ class PagesTest extends TestCase
     {
         $page = \App\Page::all()->first();
         $comments = \App\PageComment::where('page_id', '<>', $page->id)->get();
-        $resp = $this->get('/page?id=' . $page->id);
-        foreach($comments as $comment){
-            $resp->assertDontSee($comment->comment);
+        $resp = $this->followingRedirects()
+              ->get('/page?id=lskdjfldskdjlkdfjlkd;aj')
+              ->assertSee('The selected id is invalid.');
+    }
+    public function createPostDataTable()
+    {
+        $post_data_table = [];
+        $post_data_table['success'] = [];
+        $post_data_table['success'][0] = [
+            'title' => 'a',
+            'body' => 'b',
+            'tags' => ['Ruby', 'b'],
+        ];
+        $post_data_table['fail'] = [];
+        $post_data_table['fail'][0] = [
+
+        ];
+        return $post_data_table;
+    }
+    public function testPagePost()
+    {
+        $this->followingRedirects()->post('/login', [
+            'email' => $this->user->email,
+            'password' => 'testtest',
+        ]);
+        $post_data_table = $this->createPostDataTable();
+
+        foreach($post_data_table['success'] as $post_data){
+            $this->followingRedirects()->post('/page', $post_data)
+                ->assertDontSee('The title field is required.')
+                ->assertDontSee('The body field is required.')
+                ->assertDontSee('The tags field is required.');
+        }
+    }
+    public function testPagePostFailNoLogin()
+    {
+        $post_data_table = $this->createPostDataTable();
+
+        foreach($post_data_table['success'] as $post_data){
+            $this->post('/page', $post_data)->assertRedirect('/login');
+        }
+    }
+    public function testPagePostFailNoParams()
+    {
+        $post_data_table = $this->createPostDataTable();
+        $this->followingRedirects()->post('/login', [
+            'email' => $this->user->email,
+            'password' => 'testtest',
+        ]);
+        foreach($post_data_table['success'] as $post_data){
+            $this->followingRedirects()->post('/page', [])
+                ->assertSee('The title field is required.')
+                ->assertSee('The body field is required.')
+                ->assertSee('The tags field is required.');
         }
     }
 }

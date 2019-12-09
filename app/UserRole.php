@@ -7,4 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class UserRole extends Model
 {
     //
+    protected $guarded = array('created_at');
 }
