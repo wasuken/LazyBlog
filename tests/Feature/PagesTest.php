@@ -21,6 +21,7 @@ class PagesTest extends TestCase
         $this->artisan('migrate');
         $this->seed("UsersTableSeeder");
         $this->seed("PagesTableSeeder");
+        $this->seed("PageCommentsTableSeeder");
         $this->seed("RolesTableSeeder");
         $this->seed("UserRoleTableSeeder");
         $this->seed("TagsTableSeeder");
@@ -89,5 +90,32 @@ class PagesTest extends TestCase
         $response = $this->followingRedirects()
                   ->get('/page?id=' . Str::random(100))
                   ->assertSee('The selected id is invalid.');
+    }
+    public function testCommentsInPages()
+    {
+        $comments = \App\PageComment::all();
+        $resp = $this->get('/');
+        foreach($comments as $comment){
+            $resp->assertSee($comment->comment);
+        }
+    }
+    public function testCommentsInPage()
+    {
+        $page = \App\Page::all()->first();
+        $comments = \App\PageComment::where('page_id', $page->id)->get();
+
+        $resp = $this->get('/');
+        foreach($comments as $comment){
+            $resp->assertSee($comment->comment);
+        }
+    }
+    public function testCommentsInPageFail()
+    {
+        $page = \App\Page::all()->first();
+        $comments = \App\PageComment::where('page_id', '<>', $page->id)->get();
+        $resp = $this->get('/page?id=' . $page->id);
+        foreach($comments as $comment){
+            $resp->assertDontSee($comment->comment);
+        }
     }
 }

@@ -16,6 +16,8 @@ class CreatePageCommentsTable extends Migration
         Schema::create('page_comments', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('page_id');
+            $table->string('handle_name');
+            $table->string('ip_address')->nullable();
             $table->string('comment');
             $table->timestamps();
         });

@@ -14,6 +14,7 @@ class PageController extends Controller
             'writer' => 'exists:users,name',
         ]);
         $pages = DB::table('pages');
+        $all_comments = \App\PageComment::all();
         if(isset($req->writer)){
             $pages = $pages
                    ->join('users', 'users.id', 'pages.user_id')
@@ -23,6 +24,7 @@ class PageController extends Controller
         return view('pages.index', [
             'pages' => $pages->orderBy('created_at')->paginate(15),
             'writer' => $req->writer,
+            'all_comments' => $all_comments,
         ]);
     }
     public function show(Request $req)
@@ -31,7 +33,7 @@ class PageController extends Controller
             'id' => 'required|exists:pages,id',
         ]);
         $page = \App\Page::find($req->id);
-        $comments = \App\PageComment::where('page_id', $page->id);
+        $comments = \App\PageComment::where('page_id', $page->id)->get();
         $tags = DB::table('tags')
               ->join('page_tags', 'page_tags.tag_id', 'tags.id')
               ->select('tags.name', 'page_tags.page_id')
