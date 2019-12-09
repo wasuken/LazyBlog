@@ -13,43 +13,17 @@ class PageCommentsTableSeeder extends Seeder
     {
         //
         DB::table('page_comments')->truncate();
-        $page = \App\Page::all()->first();
-        $page_2 = \App\Page::all()->skip(1)->first();
-        $page_comments = [
-            [
-                'page_id' => $page->id,
-                'comment' => 'ガババビッチ',
-                'handle_name' => 'none',
-            ],
-            [
-                'page_id' => $page->id,
-                'comment' => 'うんち',
-                'handle_name' => 'ノーン',
-            ],
-            [
-                'page_id' => $page->id,
-                'comment' => 'うんちっち',
+        $page_list = [];
+        foreach(\App\Page::all() as $page){
+            $page_list = array_merge($page_list, array($page));
+        }
+        for($i=0; $i < 1000; $i++) {
+            shuffle($page_list);
+            \App\PageComment::create([
+                'page_id' => $page_list[0]->id,
+                'comment' => 'hoge' . $i,
                 'handle_name' => 'unchi',
-            ],
-            [
-                'page_id' => $page_2->id,
-                'comment' => 'foo',
-                'handle_name' => 'none',
-            ],
-            [
-                'page_id' => $page_2->id,
-                'comment' => 'huga',
-                'handle_name' => 'ノーン',
-            ],
-            [
-                'page_id' => $page_2->id,
-                'comment' => 'hoge',
-                'handle_name' => 'unchi',
-            ],
-        ];
-
-        foreach($page_comments as $page_comment) {
-            \App\PageComment::create($page_comment);
+            ]);
         }
     }
 }

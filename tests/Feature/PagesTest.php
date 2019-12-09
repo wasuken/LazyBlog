@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use App\Helpers\Helper;
 
 class PagesTest extends TestCase
 {
@@ -94,7 +95,7 @@ class PagesTest extends TestCase
     }
     public function testCommentsInPages()
     {
-        $comments = \App\PageComment::all();
+        $comments = Helper::myOrderBy(new \App\PageComment, 'created_at')->take(10)->get();
         $resp = $this->get('/');
         foreach($comments as $comment){
             $resp->assertSee($comment->comment);
@@ -103,9 +104,10 @@ class PagesTest extends TestCase
     public function testCommentsInPage()
     {
         $page = \App\Page::all()->first();
-        $comments = \App\PageComment::where('page_id', $page->id)->get();
+        $comments = \App\PageComment::where('page_id', $page->id)
+                  ->where('page_id', $page->id)->get();
 
-        $resp = $this->get('/');
+        $resp = $this->get('/page?id=' . $page->id);
         foreach($comments as $comment){
             $resp->assertSee($comment->comment);
         }

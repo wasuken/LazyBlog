@@ -9,19 +9,27 @@
 			<div class="content">
 				@foreach($all_comments as $comment)
 					<div class="box">
+						@php
+						$comment_from_page = \App\Page::find($comment->page_id);
+						@endphp
 						<div class="content">
 							<nav class="level">
 								<div class="level-left">
-									@php
-									$comment_from_page = \App\Page::find($comment->page_id);
-									@endphp
 									<a href="/page?id={{$comment_from_page->id}}">
 										<small>{{$comment->handle_name}}</small>
 									</a>
 								</div>
 							</nav>
 							<hr/>
-							{{$comment->comment}}
+
+							<nav class="level">
+								{{$comment->comment}}
+								<div class="level-right">
+									<small>
+										{{date('Y年m月d日 h:m:s',  strtotime($comment->created_at))}}
+									</small>
+								</div>
+							</nav>
 						</div>
 					</div>
 				@endforeach
@@ -61,11 +69,17 @@
 				{{$pages->appends($params)->links('vendor.pagination.default')}}
 			</div>
 		</div>
-		<div style="width:40%;float:left;">
+		<div style="width:30%;float:left;">
 			<div class="box">
 				<h3>人気記事</h3>
 				<div class="content">
-
+					@foreach($page_mosts_10 as $page)
+						<span>
+							<a class="is-block" href="/page?id={{$page->id}}">
+								{{$page->title}}
+							</a>
+						</span>
+					@endforeach
 				</div>
 			</div>
 		</div>

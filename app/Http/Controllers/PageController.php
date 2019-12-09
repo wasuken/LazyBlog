@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Helpers\Helper;
 
 class PageController extends Controller
 {
@@ -15,8 +16,20 @@ class PageController extends Controller
             'writer' => 'exists:users,name',
         ]);
         $pages = DB::table('pages');
-        // $page_mosts = \App\User::where('');
-        $all_comments = \App\PageComment::all();
+        $access_mosts_10 = \App\PageAccesslog::where('url', 'like', '%/page?id=%')
+                         ->whereBetween('status_code', [200, 299])
+                         ->select(DB::raw('count(*) as cnt, status_code, url'))
+                         ->groupBy('url', 'status')
+                         ->orderBy('cnt', 'desc')
+                         ->take(10)
+                         ->get();
+        $page_mosts_10 = [];
+        foreach($access_mosts_10 as $pal){
+            preg_match('/id=(\w+)/', $pal->url, $match);
+            $page_mosts_10 = array_merge($page_mosts_10,
+                                         array(\App\Page::find($match[1])));
+        }
+        $all_comments = Helper::myOrderBy(new \App\PageComment, 'created_at')->take(10)->get();
         if(isset($req->writer)){
             $pages = $pages
                    ->join('users', 'users.id', 'pages.user_id')
@@ -24,9 +37,10 @@ class PageController extends Controller
                    ->where('users.name', $req->writer);
         }
         return view('pages.index', [
-            'pages' => $pages->orderBy('created_at', 'desc')->paginate(15),
+            'pages' => Helper::myOrderBy($pages, 'created_at')->paginate(15),
             'writer' => $req->writer,
             'all_comments' => $all_comments,
+            'page_mosts_10' => $page_mosts_10,
         ]);
     }
     public function show(Request $req)
@@ -41,7 +55,9 @@ class PageController extends Controller
               ->select('tags.name', 'page_tags.page_id')
               ->where('page_tags.page_id', $page->id)
               ->get();
-        return view('pages.show', ['page' => $page, 'comments' => $comments, 'tags' => $tags]);
+        return view('pages.show', ['page' => $page,
+                                   'comments' => $comments,
+                                   'tags' => $tags]);
     }
     public function create()
     {

@@ -13,53 +13,18 @@ class PagesTableSeeder extends Seeder
     {
         //
         DB::table('pages')->truncate();
-        $user_writer = \App\User::where('name', 'test_writer')->first();
-        $user_admin = \App\User::where('name', 'test_admin')->first();
-        $pages = [
-            [
-                'title' => '今日のうんち1',
-                'body' => 'うんちブリブリ',
-                'user_id' => $user_writer->id,
-            ],
-            [
-                'title' => '今日のうんち2',
-                'body' => 'うんちブリブリ',
-                'user_id' => $user_admin->id,
-            ],
-            [
-                'title' => '今日のうんち3',
-                'body' => Str::random(3000),
-                'user_id' => $user_admin->id,
-            ],
-            [
-                'title' => '今日のうんち4',
-                'body' => Str::random(3000),
-                'user_id' => $user_admin->id,
-            ],
-            [
-                'title' => '今日のうんち5',
-                'body' => 'うんちブリブリ',
-                'user_id' => $user_writer->id,
-            ],
-            [
-                'title' => '今日のうんち6',
-                'body' => 'うんちブリブリ',
-                'user_id' => $user_admin->id,
-            ],
-            [
-                'title' => '今日のうんち7',
-                'body' => Str::random(3000),
-                'user_id' => $user_admin->id,
-            ],
-            [
-                'title' => '今日のうんち8',
-                'body' => Str::random(3000),
-                'user_id' => $user_admin->id,
-            ],
-        ];
+        $user_list = [];
+        $user_list[0] = \App\User::where('name', 'test_writer')->first();
+        $user_list[1] = \App\User::where('name', 'test_admin')->first();
 
-        foreach($pages as $page) {
-            \App\Page::create($page);
+
+        for($i = 0; $i<100; $i++) {
+            shuffle($user_list);
+            \App\Page::create([
+                'title' => '今日のうんち' . $i,
+                'body' => Str::random(300),
+                'user_id' => $user_list[0]->id,
+            ]);
         }
     }
 }

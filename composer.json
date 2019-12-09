@@ -52,8 +52,15 @@
 		"cache-clear": [
 			"php artisan cache:clear && php artisan config:clear && php artisan route:clear && php artisan view:clear"
 		],
-		"test":[
+		"test": [
 			"phpunit"
+		],
+		"btest": [
+			"@php artisan dusk"
+		],
+		"all-test": [
+			"phpunit",
+			"@php artisan dusk"
 		],
 		"db-re": [
 			"@php artisan migrate:reset",
