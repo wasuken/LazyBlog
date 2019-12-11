@@ -30,7 +30,8 @@ class PageController extends Controller
             $page_mosts_10 = array_merge($page_mosts_10,
                                          array(\App\Page::find($match[1])));
         }
-        $all_comments = Helper::myOrderBy(new \App\PageComment, 'created_at')->take(10)->get();
+        $all_comments = Helper::myOrderBy(new \App\PageComment, 'created_at', 'desc')
+                      ->orderBy('id', 'desc')->take(10)->get();
         if(isset($req->writer)){
             $pages = $pages
                    ->join('users', 'users.id', 'pages.user_id')
@@ -45,7 +46,7 @@ class PageController extends Controller
                    ->where('tags.name', $req->tag);
         }
         return view('pages.index', [
-            'pages' => Helper::myOrderBy($pages, 'created_at')->paginate(15),
+            'pages' => Helper::myOrderBy($pages, 'created_at', 'desc')->orderBy('id', 'desc')->paginate(15),
             'writer' => $req->writer,
             'tag' => $req->tag,
             'all_comments' => $all_comments,

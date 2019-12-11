@@ -70,5 +70,6 @@ use \App\User;
 				@yield('content')
 			</main>
 		</div>
+
 	</body>
 </html>
