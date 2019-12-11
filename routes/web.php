@@ -14,6 +14,7 @@
 Route::get('/', 'PageController@index');
 Route::get('/pages', 'PageController@index');
 Route::get('/page', 'PageController@show');
-Route::get('/page/create', 'PageController@create')->middleware('auth');
 Route::post('/page', 'PageController@store')->middleware('auth');
+Route::get('/page/create', 'PageController@create')->middleware('auth');
+
 Auth::routes();

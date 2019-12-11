@@ -11,7 +11,7 @@
 			<div class="card-content">
 				<div class="tags">
 					@foreach($tags as $tag)
-						<a class="tag hover-press" href="/tag/{{$tag->name}}">
+						<a class="tag hover-press" href="/pages?tag={{$tag->name}}">
 							{{$tag->name}}
 						</a>
 					@endforeach

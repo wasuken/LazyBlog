@@ -14,6 +14,7 @@ class PageController extends Controller
     {
         $req->validate([
             'writer' => 'exists:users,name',
+            'tag' => 'exists:tags,name',
         ]);
         $pages = DB::table('pages');
         $access_mosts_10 = \App\PageAccesslog::where('url', 'like', '%/page?id=%')
@@ -36,9 +37,17 @@ class PageController extends Controller
                    ->select('pages.*', 'users.name')
                    ->where('users.name', $req->writer);
         }
+        if(isset($req->tag)){
+            $pages = $pages
+                   ->join('page_tags', 'page_tags.page_id', 'pages.id')
+                   ->join('tags', 'tags.id', 'page_tags.tag_id')
+                   ->select('pages.*', 'tags.name')
+                   ->where('tags.name', $req->tag);
+        }
         return view('pages.index', [
             'pages' => Helper::myOrderBy($pages, 'created_at')->paginate(15),
             'writer' => $req->writer,
+            'tag' => $req->tag,
             'all_comments' => $all_comments,
             'page_mosts_10' => $page_mosts_10,
         ]);
@@ -87,7 +96,6 @@ class PageController extends Controller
                 'tag_id' => $target_tag->id,
             ]);
         }
-
         return redirect('/');
     }
 }

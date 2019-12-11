@@ -65,13 +65,19 @@ class PagesTest extends TestCase
         $response = $this->followingRedirects()
                   ->get('/pages?writer=' . $this->user->name)
                   ->assertDontSee("The selected writer is invalid.");
+        $tag_name = \App\Tag::all()->first()->name;
+        $response = $this->followingRedirects()
+                  ->get('/pages?tag=' . $tag_name)
+                  ->assertDontSee("The selected writer is invalid.");
     }
     public function testPagesFail()
     {
-
         $response = $this->followingRedirects()
                   ->get('/pages?writer=')
                   ->assertSee("The selected writer is invalid.");
+        $response = $this->followingRedirects()
+                  ->get('/pages?tag=')
+                  ->assertSee("The selected tag is invalid.");
     }
     public function testPageShow()
     {
@@ -172,4 +178,5 @@ class PagesTest extends TestCase
                 ->assertSee('The tags field is required.');
         }
     }
+
 }

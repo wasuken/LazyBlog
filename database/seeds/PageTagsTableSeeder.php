@@ -13,28 +13,20 @@ class PageTagsTableSeeder extends Seeder
     {
         //
         DB::table('page_tags')->truncate();
-        $page = \App\Page::all()->first();
-        $tag_js = \App\Tag::where('name', 'JavaScript')->first();
-        $tag_php = \App\Tag::where('name', 'PHP')->first();
-        $tag_ruby = \App\Tag::where('name', 'Ruby')->first();
+        $tag_list = [];
+        foreach(\App\Tag::all() as $tag){
+            $tag_list = array_merge($tag_list, array($tag));
+        }
 
-        $page_tags = [
-            [
-                'page_id' => $page->id,
-                'tag_id' => $tag_js->id,
-            ],
-            [
-                'page_id' => $page->id,
-                'tag_id' => $tag_php->id,
-            ],
-            [
-                'page_id' => $page->id,
-                'tag_id' => $tag_ruby->id,
-            ],
-        ];
-
-        foreach($page_tags as $page_tag) {
-            \App\PageTag::create($page_tag);
+        foreach(\App\Page::all() as $page) {
+            shuffle($tag_list);
+            $end = rand(0, count($tag_list));
+            for($i = 0; $i < $end ;$i++){
+                \App\PageTag::create([
+                    'page_id' => $page->id,
+                    'tag_id' => $tag_list[$i]->id,
+                ]);
+            }
         }
     }
 }

@@ -40,7 +40,7 @@
 				@php
 				$params = [];
 				if(isset($writer)) $params['writer'] = $writer;
-				// if(isset($q)) $params['q'] = $q;
+				if(isset($tag)) $params['tag'] = $tag;
 				@endphp
 				{{$pages->appends($params)->links('vendor.pagination.default')}}
 			</div>
