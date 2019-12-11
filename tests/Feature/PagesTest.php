@@ -101,7 +101,9 @@ class PagesTest extends TestCase
     }
     public function testCommentsInPages()
     {
-        $comments = Helper::myOrderBy(new \App\PageComment, 'created_at')->take(10)->get();
+        $comments = Helper::myOrderBy(new \App\PageComment, 'created_at', 'desc')
+                  ->orderBy('id', 'desc')
+                  ->take(10)->get();
         $resp = $this->get('/');
         foreach($comments as $comment){
             $resp->assertSee($comment->comment);
@@ -177,6 +179,11 @@ class PagesTest extends TestCase
                 ->assertSee('The body field is required.')
                 ->assertSee('The tags field is required.');
         }
+    }
+    public function testAtomPage()
+    {
+        $this->get(url('?type=atom'))->assertStatus(200);
+        $this->get(url('?type=rss2.0'))->assertStatus(200);
     }
 
 }

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\Helper;
+use FeedWriter\ATOM;
+use FeedWriter\RSS2;
 
 class PageController extends Controller
 {
@@ -15,6 +17,7 @@ class PageController extends Controller
         $req->validate([
             'writer' => 'exists:users,name',
             'tag' => 'exists:tags,name',
+            'type' => 'in:atom,rss2.0'
         ]);
         $pages = DB::table('pages');
         $access_mosts_10 = \App\PageAccesslog::where('url', 'like', '%/page?id=%')
@@ -45,13 +48,57 @@ class PageController extends Controller
                    ->select('pages.*', 'tags.name')
                    ->where('tags.name', $req->tag);
         }
-        return view('pages.index', [
-            'pages' => Helper::myOrderBy($pages, 'created_at', 'desc')->orderBy('id', 'desc')->paginate(15),
+        $pages = Helper::myOrderBy($pages, 'created_at', 'desc')->orderBy('id', 'desc')->paginate(15);
+        $html_result = view('pages.index', [
+            'pages' => $pages,
             'writer' => $req->writer,
             'tag' => $req->tag,
             'all_comments' => $all_comments,
             'page_mosts_10' => $page_mosts_10,
         ]);
+        if(isset($req->type)){
+            switch($req->type){
+            case 'atom':
+                $feed = new ATOM;
+                foreach($pages as $page){
+                    $item = $feed->createNewItem();
+                    $item->setTitle($page->title);
+                    $item->setLink(url('/page?id=' . $page->id));
+                    $item->setDate(strtotime($page->created_at));
+                    $item->setAuthor(\App\User::find($page->user_id)->name);
+                    $item->setDescription(mb_substr($page->body, 0, 100));
+                    $feed->addItem($item);
+                }
+                return response($feed->generateFeed(), 200)
+                    ->header('Content-Type', 'text/xml');
+                break;
+            case 'rss2.0':
+                $feed = new RSS2;
+                $feed->setTitle(config('app.name', ''));
+                $feed->setLink(url('/'));
+                $feed->setDescription('');
+                $feed->setDate(date(\DATE_RSS, time()));
+                $feed->setChannelElement("language","ja-JP");
+                $feed->setChannelElement("pubDate",date(\DATE_RSS, time()));
+                $feed->setChannelElement("category", "Blog");
+                foreach($pages as $page){
+                    $item=$feed->createNewItem();
+                    $item->setTitle($page->title);
+                    $item->setLink(url('/page?id=' . $page->id));
+                    $item->setDescription(mb_substr($page->body, 0, 100));
+                    $item->setDate(strtotime($page->created_at));
+                    $item->setId(url('/page?id=' . $page->id), true);
+                    $feed->addItem($item);
+                }
+                return response($feed->generateFeed(), 200)
+                    ->header('Content-Type', 'text/xml');
+                break;
+            default:
+                return $html_result;
+            }
+        }else{
+            return $html_result;
+        }
     }
     public function show(Request $req)
     {
