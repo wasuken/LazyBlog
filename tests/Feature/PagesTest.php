@@ -176,14 +176,69 @@ class PagesTest extends TestCase
         foreach($post_data_table['success'] as $post_data){
             $this->followingRedirects()->post('/page', [])
                 ->assertSee('The title field is required.')
-                ->assertSee('The body field is required.')
-                ->assertSee('The tags field is required.');
+                ->assertSee('The body field is required.');
         }
     }
-    public function testAtomPage()
+    public function testPageApiPost()
+    {
+        $token = $this->user->api_token;
+        $post_data_table = $this->createPostDataTable();
+
+        foreach($post_data_table['success'] as $post_data){
+            $post_data['token'] = $token;
+            $resp = $this->followingRedirects()
+                ->post('/api/page', $post_data);
+            $page = \App\Page::where('title', $post_data['title'])->first();
+            $resp->assertJson([
+                    'id'=> $page->id,
+                    'title' => $page->title,
+                    'body' => $page->body,
+            ]);
+        }
+    }
+    public function testPageApiPostFail()
+    {
+        $token = $this->user->api_token;
+        $post_data_table = $this->createPostDataTable();
+
+        foreach($post_data_table['success'] as $post_data){
+            $resp = $this->followingRedirects()
+                ->post('/api/page', $post_data);
+            $page = \App\Page::where('title', $post_data['title'])->first();
+            if(empty($page)){
+                $this->assertTrue(true);
+            }else{
+                $this->assertTrue(false);
+            }
+        }
+    }
+    public function testRssPage()
     {
         $this->get(url('?type=atom'))->assertStatus(200);
         $this->get(url('?type=rss2.0'))->assertStatus(200);
     }
-
+    public function testPostMarkdown()
+    {
+        $this->followingRedirects()->post('/login', [
+            'email' => $this->user->email,
+            'password' => 'testtest',
+        ]);
+        $this->assertTrue(Auth::check());
+        $this->followingRedirects()->post('/page', [
+            'title' => 'hogehoge',
+            'body' => '# hogemi\n~~hogehoge~~',
+            'tags' => ["test", "hoge", "unchi"],
+            'type' => 'md',
+        ]);
+        $page = \App\Page::where('title', 'hogehoge')->first();
+        $this->assertFalse(empty($page));
+        $this->followingRedirects()->post('/page', [
+            'title' => 'fugafuga',
+            'body' => '# hogemi\n~~hogehoge~~',
+            'tags' => ["test", "hoge", "unchi"],
+            'type' => 'hoghoge',
+        ])->assertSee("The selected type is invalid.");
+        $page = \App\Page::where('title', 'fugafuga')->first();
+        $this->assertTrue(empty($page));
+    }
 }

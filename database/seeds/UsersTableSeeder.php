@@ -20,17 +20,20 @@ class UsersTableSeeder extends Seeder
             [
                 'name' => 'test_guest',
                 'email' => 'guest@tmail.com',
-                'password' => Hash::make($pwd)
+                'password' => Hash::make($pwd),
+                'api_token' => Str::random(60),
             ],
             [
                 'name' => 'test_admin',
                 'email' => 'admin@tmail.com',
-                'password' => Hash::make($pwd)
+                'password' => Hash::make($pwd),
+                'api_token' => Str::random(60),
             ],
             [
                 'name' => 'test_writer',
                 'email' => 'writer@tmail.com',
-                'password' => Hash::make($pwd)
+                'password' => Hash::make($pwd),
+                'api_token' => Str::random(60),
             ],
         ];
 
