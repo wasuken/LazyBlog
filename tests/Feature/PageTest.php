@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Helpers\Helper;
 
-class PagesTest extends TestCase
+class PageTest extends TestCase
 {
     use RefreshDatabase;
     private $user;
