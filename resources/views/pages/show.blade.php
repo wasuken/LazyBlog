@@ -36,6 +36,18 @@
 				   class="twitter-share-button" data-show-count="false">Tweet</a>
 				<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 			</div>
+			<h3>Send Comment</h3>
+			<hr/>
+			※諸事情によりユーザ名とコメントにurlは貼れないようにしております。
+			<form action="/comment" method="POST">
+				@csrf
+				<input name="id" type="hidden" value="{{$page->id}}"/>
+				<input class="input" name="user" type="text" value="" placeholder="user name">
+				<textarea name="comment" class="textarea" placeholder="comment"></textarea>
+				<input class="button" type="submit" value="Send"/>
+			</form>
+		</div>
+		<div class="box">
 			<h3>Comments</h3>
 			<hr/>
 			@foreach($comments as $comment)
