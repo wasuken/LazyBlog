@@ -56,12 +56,6 @@
 		"test": [
 			"phpunit"
 		],
-<<<<<<< HEAD
-		"all-test": [
-			"phpunit"
-		],
-=======
->>>>>>> refs/remotes/origin/master
 		"db-re": [
 			"@php artisan migrate:reset",
 			"@php artisan migrate",
