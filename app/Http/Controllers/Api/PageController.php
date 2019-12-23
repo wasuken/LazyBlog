@@ -20,7 +20,7 @@ class PageController extends Controller
         if(!isset($req->type)){
             $req->type = "html";
         }
-        $parser = new \cebe\markdown\Markdown();
+        $parser = new \cebe\markdown\GithubMarkdown();
         $page = \App\Page::create([
             'title' => $req->title,
             'body' => $req->type === "html" ? $req->body : $parser->parse($req->body),
