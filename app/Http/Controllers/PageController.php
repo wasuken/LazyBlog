@@ -120,6 +120,14 @@ class PageController extends Controller
     {
         return view('pages.create', []);
     }
+    public function destroy(Request $req)
+    {
+        $req->validate([
+            'id' => 'required|exists:pages,id|is_author'
+        ]);
+        \App\Page::destroy($req->id);
+        return redirect('/');
+    }
     public function store(Request $req)
     {
         $req->validate([

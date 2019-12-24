@@ -5,7 +5,20 @@
 		<div class="card is-centered">
 			<div class="card-header">
 				<div class="card-header-title">
-					{{$page->title}}
+					<div style="width:100%;">{{$page->title}}</div>
+					@php
+					use Illuminate\Support\Facades\Auth;
+					@endphp
+					@if(\App\User::find($page->user_id)->id === (empty(Auth::user())? null : Auth::user()->id))
+						<div class="is-pulled-right">
+							<form action="" method="POST">
+								@csrf
+								{{ method_field('delete') }}
+								<input name="id" type="hidden" value="{{$page->id}}"/>
+								<button class="button is-primary">削除</button>
+							</form>
+						</div>
+					@endif
 				</div>
 			</div>
 			<div class="card-content">

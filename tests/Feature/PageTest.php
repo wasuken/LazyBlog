@@ -241,4 +241,37 @@ class PageTest extends TestCase
         $page = \App\Page::where('title', 'fugafuga')->first();
         $this->assertTrue(empty($page));
     }
+    public function testDeletePage()
+    {
+        $this->followingRedirects()->post('/login', [
+            'email' => $this->user->email,
+            'password' => 'testtest',
+        ]);
+
+        $page_id = \App\Page::where('user_id', $this->user->id)->first()->id;
+        $resp = $this->followingRedirects()->delete('/page', [
+            'id' => $page_id,
+        ]);
+        $page = \App\Page::find($page_id);
+        $this->assertTrue(empty($page));
+    }
+    public function testDeletePageFail()
+    {
+        $page_id = \App\Page::where('user_id', $this->user->id)->first()->id;
+        $this->followingRedirects()->delete('/page', [
+            'id' => $page_id,
+        ]);
+
+        $page = \App\Page::find($page_id);
+        $this->assertFalse(empty($page));
+        $this->followingRedirects()->post('/login', [
+            'email' => $this->user->email,
+            'password' => 'testtest',
+        ]);
+        $this->followingRedirects()->delete('/page', [
+            'id' => $page_id . Str::random(30) . "hogehogehgae",
+        ]);
+
+        $this->assertFalse(empty($page));
+    }
 }

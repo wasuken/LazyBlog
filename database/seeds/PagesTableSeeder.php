@@ -17,7 +17,6 @@ class PagesTableSeeder extends Seeder
         $user_list[0] = \App\User::where('name', 'test_writer')->first();
         $user_list[1] = \App\User::where('name', 'test_admin')->first();
 
-
         for($i = 0; $i<100; $i++) {
             shuffle($user_list);
             \App\Page::create([

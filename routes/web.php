@@ -17,6 +17,7 @@ Route::get('/comments', 'PageCommentController@index');
 Route::post('/comment', 'PageCommentController@store');
 Route::get('/page', 'PageController@show');
 Route::post('/page', 'PageController@store')->middleware('auth');
+Route::delete('/page', 'PageController@destroy')->middleware('auth');
 Route::get('/page/create', 'PageController@create')->middleware('auth');
 
 Auth::routes();
