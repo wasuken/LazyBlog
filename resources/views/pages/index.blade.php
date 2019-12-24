@@ -53,7 +53,10 @@
 						<p>
 							<a href="/page?id={{$page->id}}"><h3>{{$page->title}}</h3></a>
 							<hr/>
-							{{mb_strlen($page->body) > 30? mb_substr($page->body, 0, 30) . '...' : $page->body}}
+							@php
+							$body_replaced = preg_replace('/<.*?>/i', '', $page->body);
+							@endphp
+							{{mb_strlen($body_replaced) > 30? mb_substr($body_replaced, 0, 30) . '...' : $body_replaced}}
 						</p>
 					</div>
 					<hr/>
