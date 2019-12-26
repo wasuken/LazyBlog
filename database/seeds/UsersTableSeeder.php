@@ -36,33 +36,8 @@ class UsersTableSeeder extends Seeder
                 'api_token' => Str::random(60),
             ],
         ];
-
-        // foreach($users as $user) {
-        //     \App\User::create($user);
-        // }
-        // DB::table('users')->truncate();
-        // $pwd = Str::random(30);
-        // $token = Str::random(60);
-        // if(file_exists("pwd.txt")){
-        //     unlink("pwd.txt");
-        // }
-        // if(file_exists("token.txt")){
-        //     unlink("token.txt");
-        // }
-        // file_put_contents("pwd.txt", "pwd:" . $pwd . "\n");
-        // file_put_contents("token.txt", "token:" . $token . "\n");
-
-        // $users = [
-        //     [
-        //         'name' => 'admin',
-        //         'email' => 'wevorence@gmail.com',
-        //         'password' => Hash::make($pwd),
-        //         'api_token' => $token,
-        //     ],
-        // ];
-
-        // foreach($users as $user) {
-        //     \App\User::create($user);
-        // }
+        foreach($users as $user) {
+            \App\User::create($user);
+        }
     }
 }
