@@ -65074,7 +65074,7 @@ var render = function() {
       _c("hr"),
       _vm._v(" "),
       _c("div", {
-        staticClass: "o-body",
+        staticClass: "o-body markdown-body",
         attrs: { id: "body" },
         domProps: { innerHTML: _vm._s(_vm.body) }
       })

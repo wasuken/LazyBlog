@@ -30,7 +30,7 @@
 					@endforeach
 				</div>
 				<hr/>
-				<div style="word-wrap: break-word;">
+				<div style="word-wrap: break-word;" class="markdown-body">
 					{!! $page->body !!}
 				</div>
 			</div>

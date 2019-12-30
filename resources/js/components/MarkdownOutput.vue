@@ -2,7 +2,7 @@
 	<div class="box" style="height:600px;overflow: scroll;">
 		<div id="title" class="o-title" v-html="title"></div>
 		<hr/>
-		<div id="body" class="o-body" v-html="body"></div>
+		<div id="body" class="o-body markdown-body" v-html="body"></div>
 	</div>
 </template>
 <script>
