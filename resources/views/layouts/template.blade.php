@@ -39,6 +39,9 @@ use \App\User;
 							<a class="button is-primary" href="/page/create">post</a>
 						</div>
 						<div class="navbar-item">
+							<a class="button is-primary" href="/accesslogs">accesslogs</a>
+						</div>
+						<div class="navbar-item">
 							<a class="button is-primary" href="javascript:void(0)">{{Auth::user()->name}}</a>
 						</div>
 						<div class="navbar-item">

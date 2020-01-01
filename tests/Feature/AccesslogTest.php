@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AccesslogTest extends TestCase
 {
@@ -75,5 +76,25 @@ class AccesslogTest extends TestCase
             $this->assertEquals($page_accesslog->status_code, 404);
             $this->assertTrue(true);
         }
+    }
+    public function testAccesslogs()
+    {
+        $this->get('/accesslogs')
+            ->assertRedirect('/login');
+        $user = \App\User::all()->first();
+        $this->followingRedirects()->post('/login', [
+            'email' => $user->email,
+            'password' => 'testtest',
+        ]);
+        $this->get('/accesslogs')
+            ->assertSuccessful();
+    }
+    public function testApiAccesslogs()
+    {
+        $this->get('/api/accesslogs')
+            ->assertRedirect('/');
+        $user = \App\User::all()->first();
+        $this->get('/api/accesslogs?token=' . $user->api_token)
+                                            ->assertSuccessful();
     }
 }

@@ -18,4 +18,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 Route::group(['middleware' => ['api']], function(){
     Route::resource('page', 'Api\PageController', ['only' => ['store']]);
+    Route::resource('accesslogs', 'Api\PageAccesslogController', ['only' => ['index']]);
 });
