@@ -1865,6 +1865,19 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
@@ -1876,6 +1889,9 @@ __webpack_require__.r(__webpack_exports__);
       chartType: "ColumnChart",
       chartData: [],
       json: [],
+      min: 0,
+      max: 10,
+      matchValue: "",
       chartOptions: {
         title: 'アクセスログ集計',
         subtitle: 'accesslogs',
@@ -1913,7 +1929,14 @@ __webpack_require__.r(__webpack_exports__);
         return ds[y] - ds[x];
       });
       var cdata = [[this.labelsKey, 'value']];
-      keys.slice(0, 10).forEach(function (x) {
+
+      if (this.matchValue.length > 2) {
+        keys = keys.filter(function (x) {
+          return x.indexOf(_this2.matchValue) > -1;
+        });
+      }
+
+      keys.slice(this.min, this.max).forEach(function (x) {
         return cdata.push([x, ds[x]]);
       });
       console.log(cdata);
@@ -65047,6 +65070,8 @@ var render = function() {
       "div",
       { staticClass: "controll" },
       [
+        _c("h2", [_vm._v("Value")]),
+        _vm._v(" "),
         _c("label", { staticClass: "radio", attrs: { for: "ip_address" } }, [
           _c("input", {
             attrs: {
@@ -65098,6 +65123,115 @@ var render = function() {
           }),
           _vm._v("url\n\t\t")
         ]),
+        _vm._v(" "),
+        _c("hr"),
+        _vm._v(" "),
+        _c("h2", [_vm._v("Value Range")]),
+        _vm._v(" "),
+        _c("div", [
+          _vm._v("min:"),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.min,
+                expression: "min"
+              }
+            ],
+            staticClass: "input is-primary",
+            attrs: { type: "number", min: "0" },
+            domProps: { value: _vm.min },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.min = $event.target.value
+              }
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", [
+          _vm._v("max:"),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.max,
+                expression: "max"
+              }
+            ],
+            staticClass: "input is-primary",
+            attrs: { type: "number" },
+            domProps: { value: _vm.max },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.max = $event.target.value
+              }
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "button is-primary",
+            on: {
+              click: function($event) {
+                return _vm.parseAccessLogsJsonToData()
+              }
+            }
+          },
+          [_vm._v("change")]
+        ),
+        _vm._v(" "),
+        _c("hr"),
+        _vm._v(" "),
+        _c("h2", [_vm._v("Partical Match Filtering")]),
+        _vm._v(" "),
+        _c("div", [
+          _vm._v("text:"),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.matchValue,
+                expression: "matchValue"
+              }
+            ],
+            staticClass: "input is-primary",
+            attrs: { type: "text" },
+            domProps: { value: _vm.matchValue },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.matchValue = $event.target.value
+              }
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "button is-primary",
+            on: {
+              click: function($event) {
+                return _vm.parseAccessLogsJsonToData()
+              }
+            }
+          },
+          [_vm._v("change")]
+        ),
         _vm._v(" "),
         _c("hr"),
         _vm._v(" "),

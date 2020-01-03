@@ -1,6 +1,7 @@
 <template>
 	<div class="box">
 		<div class="controll">
+			<h2>Value</h2>
 			<label class="radio" for="ip_address">
 				<input name="label_key" type="radio" value="ip_address" id="ip_address" checked
 					   v-on:click="changeKey('ip_address')" />
@@ -16,6 +17,18 @@
 					   v-on:click="changeKey('url')"/>url
 			</label>
 			<hr/>
+
+			<h2>Value Range</h2>
+			<div>min:<input class="input is-primary" v-model="min" type="number" min="0" /></div>
+			<div>max:<input class="input is-primary" v-model="max" type="number"/></div>
+			<button class="button is-primary" v-on:click="parseAccessLogsJsonToData()">change</button>
+			<hr/>
+
+			<h2>Partical Match Filtering</h2>
+			<div>text:<input class="input is-primary" v-model="matchValue" type="text" /></div>
+			<button class="button is-primary" v-on:click="parseAccessLogsJsonToData()">change</button>
+			<hr/>
+
 			<chart
 				:chartType="chartType"
 								:chartData="chartData"
@@ -36,6 +49,9 @@
 			 chartType: "ColumnChart",
 			 chartData: [],
 			 json: [],
+			 min:0,
+			 max:10,
+			 matchValue: "",
 			 chartOptions: {
 				 title: 'アクセスログ集計',
 				 subtitle: 'accesslogs',
@@ -66,7 +82,10 @@
 			 let keys = Object.keys(ds);
 			 keys.sort((x, y) => ds[y] - ds[x]);
 			 let cdata = [[this.labelsKey, 'value']];
-			 keys.slice(0, 10).forEach(x => cdata.push([x, ds[x]]));
+			 if(this.matchValue.length > 2){
+				 keys = keys.filter(x => x.indexOf(this.matchValue) > -1)
+			 }
+			 keys.slice(this.min, this.max).forEach(x => cdata.push([x, ds[x]]));
 			 console.log(cdata);
 			 this.chartData = cdata;
 		 },
