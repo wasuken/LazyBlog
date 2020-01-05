@@ -13,7 +13,7 @@ class PageAccesslogController extends Controller
         $req->validate([
             'token' => 'required|exists:users,api_token',
         ]);
-        $logs = DB::table('page_accesslogs')->Select('ip_address', 'user_agent', 'refer', 'url')->get();
+        $logs = DB::table('page_accesslogs')->Select('ip_address', 'user_agent', 'refer', 'url', 'created_at')->get();
 
         return $logs;
     }

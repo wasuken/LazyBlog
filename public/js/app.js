@@ -1878,6 +1878,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
@@ -1887,6 +1893,8 @@ __webpack_require__.r(__webpack_exports__);
     return {
       labelsKey: "ip_address",
       chartType: "ColumnChart",
+      datetimeMin: "",
+      datetimeMax: "",
       chartData: [],
       json: [],
       min: 0,
@@ -1917,11 +1925,25 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       var ds = {};
+      var dmax = new Date(this.datetimeMax);
+      var dmin = new Date(this.datetimeMin);
       this.json.forEach(function (x) {
-        if (Number.isInteger(ds[x[_this2.labelsKey]])) {
-          ds[x[_this2.labelsKey]]++;
+        if (dmax > dmin) {
+          var curDate = new Date(x["created_at"]);
+
+          if (dmax >= curDate && dmin <= curDate) {
+            if (Number.isInteger(ds[x[_this2.labelsKey]])) {
+              ds[x[_this2.labelsKey]]++;
+            } else {
+              ds[x[_this2.labelsKey]] = 1;
+            }
+          }
         } else {
-          ds[x[_this2.labelsKey]] = 1;
+          if (Number.isInteger(ds[x[_this2.labelsKey]])) {
+            ds[x[_this2.labelsKey]]++;
+          } else {
+            ds[x[_this2.labelsKey]] = 1;
+          }
         }
       });
       var keys = Object.keys(ds);
@@ -1939,7 +1961,6 @@ __webpack_require__.r(__webpack_exports__);
       keys.slice(this.min, this.max).forEach(function (x) {
         return cdata.push([x, ds[x]]);
       });
-      console.log(cdata);
       this.chartData = cdata;
     },
     changeKey: function changeKey(key) {
@@ -65215,6 +65236,73 @@ var render = function() {
                   return
                 }
                 _vm.matchValue = $event.target.value
+              }
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "button is-primary",
+            on: {
+              click: function($event) {
+                return _vm.parseAccessLogsJsonToData()
+              }
+            }
+          },
+          [_vm._v("change")]
+        ),
+        _vm._v(" "),
+        _c("hr"),
+        _vm._v(" "),
+        _c("h2", [_vm._v("Value Range")]),
+        _vm._v(" "),
+        _c("div", [
+          _vm._v("date time min:"),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.datetimeMin,
+                expression: "datetimeMin"
+              }
+            ],
+            staticClass: "input is-primary",
+            attrs: { type: "date" },
+            domProps: { value: _vm.datetimeMin },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.datetimeMin = $event.target.value
+              }
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", [
+          _vm._v("date time max:"),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.datetimeMax,
+                expression: "datetimeMax"
+              }
+            ],
+            staticClass: "input is-primary",
+            attrs: { type: "date" },
+            domProps: { value: _vm.datetimeMax },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.datetimeMax = $event.target.value
               }
             }
           })

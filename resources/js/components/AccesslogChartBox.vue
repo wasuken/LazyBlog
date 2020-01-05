@@ -29,6 +29,12 @@
 			<button class="button is-primary" v-on:click="parseAccessLogsJsonToData()">change</button>
 			<hr/>
 
+			<h2>Value Range</h2>
+			<div>date time min:<input class="input is-primary" v-model="datetimeMin" type="date"/></div>
+			<div>date time max:<input class="input is-primary" v-model="datetimeMax" type="date"/></div>
+			<button class="button is-primary" v-on:click="parseAccessLogsJsonToData()">change</button>
+			<hr/>
+
 			<chart
 				:chartType="chartType"
 								:chartData="chartData"
@@ -38,46 +44,62 @@
 	</div>
 </template>
 <script>
- import Chart from './AccesslogGoogleChart';
- export default{
-	 components: {
-		 Chart,
-	 },
-	 data: function(){
-		 return{
-			 labelsKey: "ip_address",
-			 chartType: "ColumnChart",
-			 chartData: [],
-			 json: [],
-			 min:0,
-			 max:10,
-			 matchValue: "",
-			 chartOptions: {
-				 title: 'アクセスログ集計',
-				 subtitle: 'accesslogs',
-				 width: '60%',
-				 height: 500,
-			 }
-		 }
-	 },
-	 methods: {
-		 getAccessLogsJson: function(){
-			 let token = document.getElementById('token').value;
-			 fetch('/api/accesslogs?token=' + token)
-				 .then(resp => resp.json())
-				 .then(json => {
-					 this.json = json;
-					 this.parseAccessLogsJsonToData();
-				 });
-		 },
-		 parseAccessLogsJsonToData(){
-			 let ds = {};
-			 this.json.forEach(x => {
-				 if(Number.isInteger(ds[x[this.labelsKey]])){
-					 ds[x[this.labelsKey]]++;
-				 }else{
-					 ds[x[this.labelsKey]] = 1;
-				 }
+import Chart from './AccesslogGoogleChart';
+export default{
+	components: {
+		Chart,
+	},
+	data: function(){
+		return{
+			labelsKey: "ip_address",
+			chartType: "ColumnChart",
+			datetimeMin: "",
+			datetimeMax: "",
+			chartData: [],
+			json: [],
+			min:0,
+			max:10,
+			matchValue: "",
+			chartOptions: {
+				title: 'アクセスログ集計',
+				subtitle: 'accesslogs',
+				width: '60%',
+				height: 500,
+			}
+		}
+	},
+	methods: {
+		getAccessLogsJson: function(){
+			let token = document.getElementById('token').value;
+			fetch('/api/accesslogs?token=' + token)
+				.then(resp => resp.json())
+				.then(json => {
+					this.json = json;
+					this.parseAccessLogsJsonToData();
+				});
+		},
+		parseAccessLogsJsonToData(){
+			let ds = {};
+			let dmax = new Date(this.datetimeMax);
+			let dmin = new Date(this.datetimeMin);
+			this.json.forEach(x => {
+				if(dmax > dmin){
+					let curDate = new Date(x["created_at"]);
+					if(dmax >= curDate && dmin <= curDate){
+						if(Number.isInteger(ds[x[this.labelsKey]])){
+							ds[x[this.labelsKey]]++;
+						}else{
+							ds[x[this.labelsKey]] = 1;
+						}
+					}
+				}else{
+					if(Number.isInteger(ds[x[this.labelsKey]])){
+						ds[x[this.labelsKey]]++;
+					}else{
+						ds[x[this.labelsKey]] = 1;
+					}
+				}
+
 			 })
 			 let keys = Object.keys(ds);
 			 keys.sort((x, y) => ds[y] - ds[x]);
@@ -85,8 +107,8 @@
 			 if(this.matchValue.length > 2){
 				 keys = keys.filter(x => x.indexOf(this.matchValue) > -1)
 			 }
+
 			 keys.slice(this.min, this.max).forEach(x => cdata.push([x, ds[x]]));
-			 console.log(cdata);
 			 this.chartData = cdata;
 		 },
 		 changeKey: function(key){
