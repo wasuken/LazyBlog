@@ -64,8 +64,14 @@ class PageController extends Controller
                     ->header('Content-Type', 'text/xml');
             }
         }
+        $page_tags = DB::table('tags')
+                   ->join('page_tags', 'page_tags.tag_id', 'tags.id')
+                   ->select('tags.*', 'page_tags.page_id as page_id')
+                   ->get()
+                   ->all();
         return view('pages.index', [
             'pages' => $pages,
+            'page_tags' => $page_tags,
             'writer' => $req->writer,
             'tag' => $req->tag,
             'all_comments' => $all_comments,
