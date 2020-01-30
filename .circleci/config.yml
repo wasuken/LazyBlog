@@ -19,6 +19,7 @@ jobs:
       - APP_ENV: testing
       - APP_KEY: base64:YlIJx6uH3OUb3hxN+PAiJKlC+EGZ2KYi8VHxsfdJpLk=
       - DB_CONNECTION: sqlite
+      - APP_URL: http://localhost
 
     steps:
       - checkout
