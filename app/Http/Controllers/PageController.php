@@ -48,7 +48,7 @@ class PageController extends Controller
         }
         $pages = Helper::myOrderBy($pages, 'created_at', 'desc')
                ->orderBy('id', 'desc')
-               ->paginate(15);
+               ->simplePaginate(15);
         $html_result = view('pages.index', [
             'pages' => $pages,
             'writer' => $req->writer,

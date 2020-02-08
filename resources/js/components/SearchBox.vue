@@ -1,6 +1,8 @@
 <template>
 	<div>
-	  <input type="text" value="" />
+		<input type="text" value="" name="word" placeholder="word" />
+		<input type="text" value="" name="writer" placeholder="writer" />
+		<input type="text" value="" name="tag" placeholder="tag" />
 	</div>
 </template>
 
@@ -8,20 +10,7 @@
  export default {
 	 data: function(){
 		 return {
-			 tagsString: "",
-			 tags: [],
 		 };
 	 },
-	 methods: {
-		 clearTags: function(){
-			 this.tagsString = "";
-		 }
-	 },
-	 watch: {
-		 tagsString: function(v){
-			 this.tags = Array.from(new Set(v.split(' ')));
-			 this.tags = this.tags.filter(x => x);
-		 }
-	 }
  }
 </script>

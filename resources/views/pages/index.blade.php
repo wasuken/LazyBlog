@@ -42,7 +42,7 @@
 				if(isset($writer)) $params['writer'] = $writer;
 				if(isset($tag)) $params['tag'] = $tag;
 				@endphp
-				{{$pages->appends($params)->links('vendor.pagination.default')}}
+				{{$pages->appends($params)->links('vendor.pagination.simple-default')}}
 			</div>
 			@foreach($pages as $page)
 				<div class="box">
@@ -56,7 +56,7 @@
 							@php
 							$page_id = $page->id;
 							$pts = array_filter($page_tags, function($v) use ($page_id){
-							    return ($v->page_id === $page_id);
+							return ($v->page_id === $page_id);
 							});
 							@endphp
 							@foreach($pts as $page_tag)
@@ -79,7 +79,7 @@
 
 			@endforeach
 			<div>
-				{{$pages->appends($params)->links('vendor.pagination.default')}}
+				{{$pages->appends($params)->links('vendor.pagination.simple-default')}}
 			</div>
 		</div>
 		<div style="width:30%;float:left;">
