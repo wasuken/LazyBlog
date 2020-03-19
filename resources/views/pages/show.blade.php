@@ -1,4 +1,4 @@
-@extends('layouts.template')
+@extends('layouts.template', ['title' => $page->title])
 
 @section('content')
 	<div class="is-centered" style="width:80%;">
