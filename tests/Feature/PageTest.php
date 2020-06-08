@@ -274,4 +274,24 @@ class PageTest extends TestCase
 
         $this->assertFalse(empty($page));
     }
+    public function testPageDeleteAccesslogsBug(){
+        $page_id = \App\Page::where('user_id', $this->user->id)->first()->id;
+        $this->followingRedirects()->delete('/page', [
+            'id' => $page_id,
+        ]);
+
+        // log create.
+        $resp = $this->get('/page?id=' . $page_id);
+
+        $this->followingRedirects()->post('/login', [
+            'email' => $this->user->email,
+            'password' => 'testtest',
+        ]);
+        // delete page.
+        $this->followingRedirects()->delete('/page', [
+            'id' => $page_id . Str::random(30) . "hogehogehgae",
+        ]);
+
+        $resp = $this->get('/')->assertSuccessful();
+    }
 }

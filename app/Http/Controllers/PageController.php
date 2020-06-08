@@ -28,8 +28,11 @@ class PageController extends Controller
         $page_mosts_10 = [];
         foreach($access_mosts_10 as $pal){
             preg_match('/id=(\w+)/', $pal->url, $match);
-            $page_mosts_10 = array_merge($page_mosts_10,
-                                         array(\App\Page::find($match[1])));
+            $pg = \App\Page::find($match[1]);
+            if(!empty($pg)){
+                $page_mosts_10 = array_merge($page_mosts_10,
+                                             array(\App\Page::find($match[1])));
+            }
         }
         $all_comments = Helper::myOrderBy(new \App\PageComment, 'created_at', 'desc')
                       ->orderBy('id', 'desc')->take(10)->get();
