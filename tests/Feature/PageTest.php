@@ -14,22 +14,6 @@ use App\Helpers\Helper;
 class PageTest extends TestCase
 {
     use RefreshDatabase;
-    private $user;
-    protected function setup(): void
-    {
-        parent::setUp();
-
-        $this->artisan('migrate');
-        $this->seed("UsersTableSeeder");
-        $this->seed("PagesTableSeeder");
-        $this->seed("PageCommentsTableSeeder");
-        $this->seed("RolesTableSeeder");
-        $this->seed("UserRoleTableSeeder");
-        $this->seed("TagsTableSeeder");
-        $this->seed("PageTagsTableSeeder");
-        $this->seed("PageAccessLogsTableSeeder");
-        $this->user = \App\User::where('name', 'test_admin')->first();
-    }
     public function testBasic()
     {
         $response = $this->get('/')
@@ -128,21 +112,6 @@ class PageTest extends TestCase
               ->get('/page?id=lskdjfldskdjlkdfjlkd;aj')
               ->assertSee('The selected id is invalid.');
     }
-    public function createPostDataTable()
-    {
-        $post_data_table = [];
-        $post_data_table['success'] = [];
-        $post_data_table['success'][0] = [
-            'title' => 'a',
-            'body' => 'b',
-            'tags' => ['Ruby', 'b'],
-        ];
-        $post_data_table['fail'] = [];
-        $post_data_table['fail'][0] = [
-
-        ];
-        return $post_data_table;
-    }
     public function testPagePost()
     {
         $this->followingRedirects()->post('/login', [
@@ -177,39 +146,6 @@ class PageTest extends TestCase
             $this->followingRedirects()->post('/page', [])
                 ->assertSee('The title field is required.')
                 ->assertSee('The body field is required.');
-        }
-    }
-    public function testPageApiPost()
-    {
-        $token = $this->user->api_token;
-        $post_data_table = $this->createPostDataTable();
-
-        foreach($post_data_table['success'] as $post_data){
-            $post_data['token'] = $token;
-            $resp = $this->followingRedirects()
-                ->post('/api/page', $post_data);
-            $page = \App\Page::where('title', $post_data['title'])->first();
-            $resp->assertJson([
-                    'id'=> $page->id,
-                    'title' => $page->title,
-                    'body' => $page->body,
-            ]);
-        }
-    }
-    public function testPageApiPostFail()
-    {
-        $token = $this->user->api_token;
-        $post_data_table = $this->createPostDataTable();
-
-        foreach($post_data_table['success'] as $post_data){
-            $resp = $this->followingRedirects()
-                ->post('/api/page', $post_data);
-            $page = \App\Page::where('title', $post_data['title'])->first();
-            if(empty($page)){
-                $this->assertTrue(true);
-            }else{
-                $this->assertTrue(false);
-            }
         }
     }
     public function testRssPage()
