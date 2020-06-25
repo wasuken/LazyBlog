@@ -9,6 +9,10 @@ jobs:
       # specify the version you desire here
       - image: circleci/php:7.3-stretch-node-browsers
 
+    branches:
+        only:
+          - dev
+
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
@@ -43,3 +47,9 @@ jobs:
 
       # run tests!
       - run: php ./vendor/bin/phpunit
+      # push master
+      - run: git config user.email "wevorence@gmail.com"
+      - run: git config user.name "circleci"
+      - run: git checkout master
+      - run: git merge dev
+      - run: git push origin master
