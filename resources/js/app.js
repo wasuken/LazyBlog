@@ -7,6 +7,7 @@
 require('./bootstrap');
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github.css';
+import store from './store/index';
 
 window.Vue = require('vue');
 
@@ -23,12 +24,16 @@ window.Vue = require('vue');
 
 Vue.component('markdown-editor-component', require('./components/MarkdownEditorComponent.vue').default);
 Vue.component('accesslog-chart-box', require('./components/AccesslogChartBox.vue').default);
+Vue.component('top-page', require('./components/TopPage.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+// const app = new Vue({
+//     el: '#app',
+// });
 const app = new Vue({
-    el: '#app',
-});
+    store,
+}).$mount('#app');

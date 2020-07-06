@@ -83,35 +83,6 @@ class PageTest extends TestCase
                   ->get('/page?id=' . Str::random(100))
                   ->assertSee('The selected id is invalid.');
     }
-    public function testCommentsInPages()
-    {
-        $comments = Helper::myOrderBy(new \App\PageComment, 'created_at', 'desc')
-                  ->orderBy('id', 'desc')
-                  ->take(10)->get();
-        $resp = $this->get('/');
-        foreach($comments as $comment){
-            $resp->assertSee($comment->comment);
-        }
-    }
-    public function testCommentsInPage()
-    {
-        $page = \App\Page::all()->first();
-        $comments = \App\PageComment::where('page_id', $page->id)
-                  ->where('page_id', $page->id)->get();
-
-        $resp = $this->get('/page?id=' . $page->id);
-        foreach($comments as $comment){
-            $resp->assertSee($comment->comment);
-        }
-    }
-    public function testCommentsInPageFail()
-    {
-        $page = \App\Page::all()->first();
-        $comments = \App\PageComment::where('page_id', '<>', $page->id)->get();
-        $resp = $this->followingRedirects()
-              ->get('/page?id=lskdjfldskdjlkdfjlkd;aj')
-              ->assertSee('The selected id is invalid.');
-    }
     public function testPagePost()
     {
         $this->followingRedirects()->post('/login', [

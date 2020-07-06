@@ -84,7 +84,7 @@ class PageApiTest extends TestCase
         $resp = $this->apiGetBaseResponse($params);
         $resp->assertSuccessful();
         $max = PHP_INT_MAX;
-        foreach($resp->decodeResponseJson() as $rec){
+        foreach($resp->decodeResponseJson()['data'] as $rec){
             if(intval($rec['cnt']) <= $max){
                 $max = intval($rec['cnt']);
             }else{
@@ -101,10 +101,10 @@ class PageApiTest extends TestCase
         // ページングテスト
         $params['q'] = 'a';
         $params['count'] = '100';
-        $respJson = $this->apiGetBaseResponse($params)->decodeResponseJson();
+        $respJson = $this->apiGetBaseResponse($params)->decodeResponseJson()['data'];
         $params['count'] = '10';
         $params['current'] = '2';
-        $respJson2 = $this->apiGetBaseResponse($params)->decodeResponseJson();
+        $respJson2 = $this->apiGetBaseResponse($params)->decodeResponseJson()['data'];
         $this->assertEquals(array_slice($respJson, 10, 10), $respJson2);
     }
     public function testApiPageIndexDetail()
@@ -118,7 +118,7 @@ class PageApiTest extends TestCase
         ];
         $pb = Carbon::parse($params['pb']);
         $pe = Carbon::parse($params['pe']);
-        foreach($this->apiGetBaseResponse($params)->decodeResponseJson() as $x){
+        foreach($this->apiGetBaseResponse($params)->decodeResponseJson()['data'] as $x){
             if($pb > Carbon::parse($x['updated_at']) || Carbon::parse($x['updated_at']) > $pe){
                 $this->assertTrue(false);
             }

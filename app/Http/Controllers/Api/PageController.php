@@ -18,12 +18,16 @@ class PageController extends Controller
         $req->validate([
             // 検索に使うクエリ
             'q' => 'min:1|max:200',
+            // タグ検索に引っかかったものを優先的に表示する
+            'tag' => 'min:1|max:200',
+            // 記事投稿者で検索を行う。
+            'writer' => 'min:1|max:200',
             // ソートに使うキー
             'sortKey' => 'in:pageView,date',
             // 並び順
             'order' => 'in:asc,desc',
-            // 最大件数
-            'count' => 'required|integer|min:1|max:' . $maxId,
+            // 最大件数(100まで)
+            'count' => 'integer|min:1|max:100',
             // ページ数。currentの分だけ検索結果の先頭を無視する
             'current' => 'integer',
             // pbで指定された日付以上の日付を持つ記事を対象にする。
@@ -31,6 +35,10 @@ class PageController extends Controller
             // peで指定された日付以下の日付を持つ記事を対象にする。
             'pe' => 'date',
         ]);
+
+        if(!isset($req->count)){
+            $req->count = 30;
+        }
 
         // 何もしていされなければ一週間ぐらいのスパン
         $latest = \App\Page::orderBy('updated_at', 'desc')->first();
@@ -54,18 +62,51 @@ class PageController extends Controller
             $req->current -= 1;
         }
         $pages = DB::table('pages')
-               ->where('updated_at', '>=', $pb->format('Y-m-d H:i:s'))
-               ->where('updated_at', '<=', $pe->format('Y-m-d H:i:s'));
+               ->where('pages.updated_at', '>=', $pb->format('Y-m-d H:i:s'))
+               ->where('pages.updated_at', '<=', $pe->format('Y-m-d H:i:s'));
         $searchResult = array();
         // 全角スペースを半角スペースに置換する。
         $req->q = preg_replace('/　/', ' ', $req->q);
         $idList = array();
+        if(!isset($req->tag)){
+            $req->tag = '';
+        }
+        if(!isset($req->writer)){
+            $req->writer = '';
+        }
+        $req->tag = preg_replace('/　/', ' ', $req->tag);
+        $tagList = array_filter(preg_split('/\s+/', $req->tag),
+                                function($x){ return !empty($x);});
         // or検索だけ実装する。
-        foreach(preg_split('/\s+/', $req->q) as $word){
-            $likeQuery = '%' . mb_strtolower($word) . '%';
-            // grep検索
-            // 絶対遅い
-            foreach($pages->where('body', 'like', $likeQuery)->get() as $page){
+        $words = array_filter(preg_split('/\s+/', $req->q),
+                              function($x){ return !empty($x);});
+        if(!empty($tagList)){
+            $pages = $pages->join('page_tags', 'page_tags.page_id', 'pages.id')
+                           ->join('tags', 'tags.id', 'page_tags.tag_id')
+                           ->whereIn('tags.name', $tagList)
+                           ->select('pages.*');
+        }
+        if(!empty($req->writer)){
+            $pages = $pages->join('users', 'users.id', 'pages.user_id')
+                           ->where('users.name', $req->writer)
+                           ->select('pages.*');
+        }
+        if(!empty($words)){
+            foreach($words as $word){
+                $likeQuery = '%' . mb_strtolower($word) . '%';
+                $wSearch = $pages->where('body', 'like', $likeQuery);
+                // grep検索
+                // 絶対遅い
+                foreach($wSearch->get() as $page){
+                    $id = $page->id;
+                    if(array_search($id, $idList) === false){
+                        $searchResult = array_merge($searchResult, array($page));
+                        $idList = array_merge($idList, array($id));
+                    }
+                }
+            }
+        }else{
+            foreach($pages->get() as $page){
                 $id = $page->id;
                 if(array_search($id, $idList) === false){
                     $searchResult = array_merge($searchResult, array($page));
@@ -129,7 +170,23 @@ class PageController extends Controller
         if($req->order === 'desc'){
             $searchResult = array_reverse($searchResult);
         }
-        return array_slice($searchResult, ($req->current * $req->count), $req->count);
+
+        $result = array();
+
+        $result['data'] = array_map(function($x){
+            $tags = \App\Tag::join('page_tags', 'tags.id', 'page_tags.tag_id')
+                  ->where('page_tags.page_id', $x['id'])->get();
+            $tagNames = array();
+            foreach($tags as $tag){
+                $tagNames = array_merge($tagNames, array($tag->name));
+            }
+            $x['tags'] = $tagNames;
+            return $x;
+        }, array_slice($searchResult, ($req->current * $req->count), $req->count));
+
+        $result['pageCount'] = ceil(count($searchResult) / $req->count);
+
+        return $result;
     }
     //
     public function store(Request $req)
