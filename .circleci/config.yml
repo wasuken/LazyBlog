@@ -8,6 +8,7 @@ jobs:
     docker:
       # specify the version you desire here
       - image: circleci/php:7.3-stretch-node-browsers
+      - image: circleci/node:9.9
 
     branches:
         only:
@@ -45,8 +46,13 @@ jobs:
             - ./vendor
           key: v1-dependencies-{{ checksum "composer.json" }}
 
+      - run: yarn install
+
       # run tests!
-      - run: php ./vendor/bin/phpunit
+      ## PHP Test
+      - run: composer test
+      ## JS Test
+      - run: npm run test
       # push master
       - run: git config user.email "wevorence@gmail.com"
       - run: git config user.name "circleci"
