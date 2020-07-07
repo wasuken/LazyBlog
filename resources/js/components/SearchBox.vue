@@ -5,34 +5,34 @@
   </div>
   <div class="content">
 	<div>
-	  <div>検索ワード:<input v-model="queries.q" type="text" value="" name="query" placeholder="query" /></div>
-	  <div>タグ:<input v-model="queries.tag" type="text" value="" name="tag" placeholder="tag" /></div>
-	  <div>記事作成者:<input v-model="queries.writer" type="text" value="" name="writer" placeholder="writer" /></div>
+	  <div>Search Word:<input v-model="queries.q" type="text" value="" name="query" placeholder="query" /></div>
+	  <div>Tag:<input v-model="queries.tag" type="text" value="" name="tag" placeholder="tag" /></div>
+	  <div>Writer:<input v-model="queries.writer" type="text" value="" name="writer" placeholder="writer" /></div>
 	</div>
 	<div>
 	  <div>
-		並び替え:
+		Sort Key:
 		<select v-model="queries.sortKey" name="sort-key">
-		  <option value="pageView" selected>閲覧数</option>
-		  <option value="date">日付</option>
+		  <option value="pageView" selected>Page View</option>
+		  <option value="date">Date</option>
 		</select>
 	  </div>
 	  <div>
-		並び替え順:
+		Order:
 		<select v-model="queries.order" name="order">
-		  <option value="desc" selected>降順</option>
-		  <option value="asc">昇順</option>
+		  <option value="desc" selected>Desc</option>
+		  <option value="asc">Asc</option>
 		</select>
 	  </div>
 	  <div>
-		取得記事数(最大100):<input v-model="queries.count" type="number" value="30" min="1" max="100"/>
+		Max Page Count(Max100):<input v-model="queries.count" type="number" value="30" min="1" max="100"/>
 	  </div>
 	  <hr/>
 	  <div>
-		<h4>作成日絞り込み</h4>
+		<h4>Date Range</h4>
 		<div>
-		  <p>開始:<input v-model="queries.pb" type="datetime-local" /></p>
-		  <p>終了:<input v-model="queries.pe" type="datetime-local" /></p>
+		  <p>Begin:<input v-model="queries.pb" type="datetime-local" /></p>
+		  <p>End:<input v-model="queries.pe" type="datetime-local" /></p>
 		</div>
 	  </div>
 	  <p>

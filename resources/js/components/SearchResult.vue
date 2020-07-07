@@ -1,7 +1,7 @@
 <template>
 <div>
   <div class="box">
-	ページ:{{lastQueryParams.current}}/{{allCount}}
+	Page:{{lastQueryParams.current}}/{{allCount}}
 	<hr/>
 	<!-- ここにページング用の要素周りの処理を入れる。 -->
 	<nav aria-label="Page navigation">
@@ -26,7 +26,7 @@
 		<hr/>
 		<!-- bodyを表示。なお、30文字以下に切り捨てる -->
 		{{(page.body || '').length <= 30 ? page.body : page.body.slice(0, 30)}}
-	  </p>
+									  </p>
 	</div>
 
 	<hr/>
@@ -40,8 +40,17 @@
 	</nav>
   </div>
 
-  <div>
+  <div class="box">
+	Page:{{lastQueryParams.current}}/{{allCount}}
+	<hr/>
 	<!-- ここにページング用の要素周りの処理を入れる。 -->
+	<nav aria-label="Page navigation">
+	  <ul class="pagination">
+		<button class="page-item" @click="clickListMove(-1)">Prev</button>
+		<button class="page-item" @click="clickListMove(1)">Next</button>
+	  </ul>
+	</nav>
+	<hr/>
   </div>
 </div>
 </template>
