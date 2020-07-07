@@ -44,25 +44,6 @@ class PageTest extends TestCase
         ])->assertSee('These credentials do not match our records.');
         $this->assertFalse(Auth::check());
     }
-    public function testPages()
-    {
-        $response = $this->followingRedirects()
-                  ->get('/pages?writer=' . $this->user->name)
-                  ->assertDontSee("The selected writer is invalid.");
-        $tag_name = \App\Tag::all()->first()->name;
-        $response = $this->followingRedirects()
-                  ->get('/pages?tag=' . $tag_name)
-                  ->assertDontSee("The selected writer is invalid.");
-    }
-    public function testPagesFail()
-    {
-        $response = $this->followingRedirects()
-                  ->get('/pages?writer=')
-                  ->assertSee("The selected writer is invalid.");
-        $response = $this->followingRedirects()
-                  ->get('/pages?tag=')
-                  ->assertSee("The selected tag is invalid.");
-    }
     public function testPageShow()
     {
         $page = \App\Page::all()->first();
