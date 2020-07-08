@@ -126,46 +126,49 @@ class PageController extends Controller
         }
         // 2(1も通る)
         if(!isset($req->order)){
-            $req->order = 'asc';
+            $req->order = 'desc';
+        }
+
+        $searchResultExtend = array();
+
+        // ページ閲覧数を算出する。
+        foreach($searchResult as $v){
+            $count = \App\PageAccessLog::where('url', 'like',
+                                               '%page?id=' . $v->id . '%')
+                   ->count();
+            $searchResultExtend = array_merge($searchResultExtend,
+                                              array(array('id' => $v->id,
+                                                          'data' => $v,
+                                                          'cnt' => $count)));
         }
 
         switch($req->sortKey){
         case 'date':
-            if(isset($req->date)){
-                usort($searchResult, function($a, $b){
-                    return $a->updated_at <=> $b->updated_at;
-                });
-            }
+            usort($searchResult, function($a, $b){
+                return Carbon::parse($a->updated_at) <=> Carbon::parse($b->updated_at);
+            });
+            break;
         case 'pageView':
-            $searchResultExtend = array();
-            // ページ閲覧数を算出する。
-            foreach($searchResult as $v){
-                $count = \App\PageAccessLog::where('url', 'like',
-                                                   '%page?id=' . $v->id . '%')
-                       ->count();
-                $searchResultExtend = array_merge($searchResultExtend,
-                                                  array(array('id' => $v->id,
-                                                              'data' => $v,
-                                                              'cnt' => $count)));
-            }
             usort($searchResultExtend, function($a, $b){
                 return $a['cnt'] <=> $b['cnt'];
             });
-            $searchResult = array();
-            $users = \App\User::select('id', 'name')->get();
-            $idNamePairs = array();
-            foreach($users as $u){
-                $idNamePairs[$u->id] = $u->name;
-            }
-            foreach($searchResultExtend as $v){
-                $v2 = get_object_vars($v['data']);
-                $v2['cnt'] = $v['cnt'];
-                $v2['user_name'] = $idNamePairs[intval($v2['user_id'])];
-                unset($v2['user_id']);
-                $searchResult = array_merge($searchResult,
-                                            array($v2));
-            }
+            break;
         }
+
+        $searchResult = array();
+        $users = \App\User::select('id', 'name')->get();
+        $idNamePairs = array();
+        foreach($users as $u){
+            $idNamePairs[$u->id] = $u->name;
+        }
+        foreach($searchResultExtend as $v){
+            $v2 = get_object_vars($v['data']);
+            $v2['cnt'] = $v['cnt'];
+            $v2['user_name'] = $idNamePairs[intval($v2['user_id'])];
+            unset($v2['user_id']);
+            $searchResult = array_merge($searchResult, array($v2));
+        }
+
         // 降順
         if($req->order === 'desc'){
             $searchResult = array_reverse($searchResult);
