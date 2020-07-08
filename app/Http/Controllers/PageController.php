@@ -12,6 +12,19 @@ class PageController extends Controller
     //
     public function index(Request $req)
     {
+        $req->validate([
+            'type' => 'in:atom,rss2.0'
+        ]);
+        if(isset($req->type)){
+            $pages = \App\Page::orderBy('updated_at', 'desc')
+                   ->take(20)
+                   ->get();
+            $feed = Helper::pageToFeed($req->type, $pages);
+            if(!empty($feed)){
+                return response($feed, 200)
+                    ->header('Content-Type', 'text/xml');
+            }
+        }
         return view('pages.index');
     }
     public function show(Request $req)
