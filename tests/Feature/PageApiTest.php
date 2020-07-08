@@ -354,4 +354,34 @@ class PageApiTest extends TestCase
         }
         $this->assertTrue(true);
     }
+    public function testPageApiUpdatePage()
+    {
+        $page = \App\Page::all()->first();
+        $token = \App\User::find($page->user_id)->api_token;
+
+        $post_data = [
+            'title' => 'buriburi unchi',
+            'body' => 'morimori unchi',
+            'tags' => ['JavaScript', 'Unchi'],
+            'token' => $token
+        ];
+
+        $this->followingRedirects()
+             ->put('/api/page/'.$page->id, $post_data)
+             ->assertSuccessful();
+
+        $tags = array_map(function($x){
+            return $x['name'];
+        }, \App\Tag::join('page_tags', 'tags.id', 'page_tags.tag_id')
+            ->join('pages', 'pages.id', 'page_tags.page_id')
+            ->where('pages.id', $page->id)
+            ->select('tags.name as name')
+            ->get()
+            ->toArray());
+
+        $page = \App\Page::find($page->id);
+        $this->assertEquals('buriburi unchi', $page->title);
+        $this->assertEquals('morimori unchi', $page->body);
+        $this->assertEquals(['JavaScript', 'Unchi'], $tags);
+    }
 }

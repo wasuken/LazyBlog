@@ -221,4 +221,51 @@ class PageController extends Controller
                 'title' => $page->title,
                 'body' => $page->body,];
     }
+    public function update(Request $req, $id)
+    {
+        if(empty(\App\Page::find($id))){
+            return response()->json([
+                'status' => 400,
+                'errors' => ['not found page id.']
+            ], 400);
+        }
+        $validator = \Validator::make($req->all(), [
+            'title' => 'min:1|max:200',
+            'body' => 'min:1',
+            'tags' => 'array',
+            'type' => 'in:md,html',
+            'token' => 'required|exists:users,api_token'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'errors' => $validator->errors()
+            ], 400);
+        }
+        if(!isset($req->type)){
+            $req->type = "html";
+        }
+        $parser = new \cebe\markdown\GithubMarkdown();
+        $user = \App\User::where('api_token', $req->token)->first();
+        $page = \App\Page::find($id);
+        // なぜかuser_idがstringになってる。調査中。
+        if($user->id !== intval($page->user_id)){
+            return response()->json([
+                'status' => 400,
+                'errors' => ['mismatch user token.']
+            ], 400);
+        }
+
+        if(isset($req->title)) $page->title = $req->title;
+        if(isset($req->body)) $page->body = $req->type === "html" ? $req->body : $parser->parse($req->body);
+        $page->save();
+
+        if(isset($req->tags)){
+             \App\PageTag::where('page_id', $page->id)->delete();
+             \App\Tag::tagsCreate($req->tags, $page->id);
+        }
+        return ['id'=> $page->id,
+                'title' => $page->title,
+                'body' => $page->body,];
+    }
 }
