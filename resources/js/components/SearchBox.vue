@@ -79,8 +79,6 @@ export default {
 			}
 		},
 		handleSearch(){
-			this.setURLParams();
-			console.log(this.queries);
 			fetch(encodeURI('/api/page?' + (Object.keys(this.queries)
 											.filter(x => this.queries[x] !== "")
 											.map(x => x + '=' + this.queries[x])
@@ -91,6 +89,7 @@ export default {
 		}
 	},
 	mounted: function(){
+		this.setURLParams();
 		this.handleSearch();
 	},
 }

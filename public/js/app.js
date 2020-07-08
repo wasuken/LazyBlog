@@ -2493,8 +2493,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     handleSearch: function handleSearch() {
       var _this = this;
 
-      this.setURLParams();
-      console.log(this.queries);
       fetch(encodeURI('/api/page?' + Object.keys(this.queries).filter(function (x) {
         return _this.queries[x] !== "";
       }).map(function (x) {
@@ -2509,6 +2507,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   mounted: function mounted() {
+    this.setURLParams();
     this.handleSearch();
   }
 });
