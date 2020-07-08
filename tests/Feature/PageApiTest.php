@@ -23,12 +23,12 @@ class PageApiTest extends TestCase
         foreach($post_data_table['success'] as $post_data){
             $post_data['token'] = $token;
             $resp = $this->followingRedirects()
-                ->post('/api/page', $post_data);
+                         ->post('/api/page', $post_data);
             $page = \App\Page::where('title', $post_data['title'])->first();
             $resp->assertJson([
-                    'id'=> $page->id,
-                    'title' => $page->title,
-                    'body' => $page->body,
+                'id'=> $page->id,
+                'title' => $page->title,
+                'body' => $page->body,
             ]);
         }
     }
@@ -39,7 +39,7 @@ class PageApiTest extends TestCase
 
         foreach($post_data_table['success'] as $post_data){
             $resp = $this->followingRedirects()
-                ->post('/api/page', $post_data);
+                         ->post('/api/page', $post_data);
             $page = \App\Page::where('title', $post_data['title'])->first();
             if(empty($page)){
                 $this->assertTrue(true);
@@ -126,7 +126,7 @@ class PageApiTest extends TestCase
         $this->assertTrue(true);
         $params['pb'] = '2019-12-30';
         $this->assertEquals(count($this->apiGetBaseResponse($params)
-                                ->decodeResponseJson()), 0);
+                                       ->decodeResponseJson()), 0);
         foreach(\App\Page::all() as $x){
             $x->delete();
         }
@@ -243,12 +243,74 @@ class PageApiTest extends TestCase
             [['pe' => '2019-08-07'], 0],
         ]);
     }
-        public function testApiPagePbPe()
+    public function testApiPagePbPe()
     {
         $this->simpleRequestChecks([
             [['pb' => '', 'pe' => '2019-08-07'], 400],
             [['pb' => Str::random(40) .  "^1230kdsal;3", 'pe' => '2019-08-07'], 400],
             [['pb' => '2019-07-07', 'pe' => '2019-08-07'], 0],
         ]);
+    }
+    public function testApiPageQueryTag()
+    {
+        $params = [
+            'q' => 'af',
+            'tag' => 'JavaScript',
+        ];
+        $j = $this->apiGetBaseResponse($params)->decodeResponseJson();
+        $status = 0;
+        if(array_key_exists('status', $j)){
+            $status = $j['status'];
+        }
+        $this->assertEquals(0, $status);
+
+        foreach($j['data'] as $rec){
+            if((array_search('JavaScript', array_values($rec['tags'])) === false)
+               || (preg_match('/af/', mb_strtolower($rec['body'])) <= 0)){
+                $this->assertTrue(false);
+            }
+        }
+        $this->assertTrue(true);
+    }
+    public function testApiPageQuerySortKeyOrder()
+    {
+        $params = [
+            'q' => 'af',
+            'tag' => 'JavaScript',
+            'order' => 'desc',
+            'sortKey' => 'pageView',
+        ];
+        $j = $this->apiGetBaseResponse($params)->decodeResponseJson();
+        $status = 0;
+        if(array_key_exists('status', $j)){
+            $status = $j['status'];
+        }
+        $this->assertEquals(0, $status);
+
+        $lastValue = 999999999;
+        foreach($j['data'] as $v){
+            if($lastValue < $v['cnt']){
+                $this->assertTrue(false);
+            }
+            $lastValue = $v['cnt'];
+        }
+        $this->assertTrue(true);
+
+        $params['order'] = 'asc';
+        $j = $this->apiGetBaseResponse($params)->decodeResponseJson();
+        $status = 0;
+        if(array_key_exists('status', $j)){
+            $status = $j['status'];
+        }
+        $this->assertEquals(0, $status);
+
+        $lastValue = -1;
+        foreach($j['data'] as $v){
+            if($lastValue > $v['cnt']){
+                $this->assertTrue(false);
+            }
+            $lastValue = $v['cnt'];
+        }
+        $this->assertTrue(true);
     }
 }
