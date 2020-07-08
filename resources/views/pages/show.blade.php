@@ -24,7 +24,7 @@
 			<div class="card-content">
 				<div class="tags">
 					@foreach($tags as $tag)
-						<a class="tag hover-press" href="/pages?tag={{$tag->name}}">
+						<a class="tag hover-press" href="/?tag={{$tag->name}}">
 							{{$tag->name}}
 						</a>
 					@endforeach
@@ -39,7 +39,7 @@
 					@php
 					$page_user = \App\User::find($page->user_id);
 					@endphp
-					writer:<a href="/pages?writer={{$page_user->name}}">{{$page_user->name}}</a>
+					writer:<a href="/?writer={{$page_user->name}}">{{$page_user->name}}</a>
 				</div>
 			</div>
 		</div>

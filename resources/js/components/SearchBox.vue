@@ -69,7 +69,18 @@ export default {
 		...mapGetters('search', [
 			'getLastQueryParams'
 		]),
+		setURLParams(){
+			let pair=location.search.substring(1).split('&');
+			for(let i=0;pair[i];i++) {
+				let kv = pair[i].split('=');
+				if(this.queries[kv[0]] !== undefined){
+					this.queries[kv[0]]=decodeURI(kv[1]);
+				}
+			}
+		},
 		handleSearch(){
+			this.setURLParams();
+			console.log(this.queries);
 			fetch(encodeURI('/api/page?' + (Object.keys(this.queries)
 											.filter(x => this.queries[x] !== "")
 											.map(x => x + '=' + this.queries[x])
@@ -81,7 +92,6 @@ export default {
 	},
 	mounted: function(){
 		this.handleSearch();
-		this.queries = this.getLastQueryParams();
 	},
 }
 </script>

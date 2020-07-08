@@ -2479,9 +2479,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   methods: _objectSpread(_objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapMutations"])('search', ['setResult', 'setLastQueryParams'])), Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])('search', ['getLastQueryParams'])), {}, {
+    setURLParams: function setURLParams() {
+      var pair = location.search.substring(1).split('&');
+
+      for (var i = 0; pair[i]; i++) {
+        var kv = pair[i].split('=');
+
+        if (this.queries[kv[0]] !== undefined) {
+          this.queries[kv[0]] = decodeURI(kv[1]);
+        }
+      }
+    },
     handleSearch: function handleSearch() {
       var _this = this;
 
+      this.setURLParams();
+      console.log(this.queries);
       fetch(encodeURI('/api/page?' + Object.keys(this.queries).filter(function (x) {
         return _this.queries[x] !== "";
       }).map(function (x) {
@@ -2497,7 +2510,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   }),
   mounted: function mounted() {
     this.handleSearch();
-    this.queries = this.getLastQueryParams();
   }
 });
 
