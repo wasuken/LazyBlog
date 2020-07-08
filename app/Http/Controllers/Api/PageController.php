@@ -46,30 +46,24 @@ class PageController extends Controller
             $req->count = 30;
         }
 
-        // 何もしていされなければ一週間ぐらいのスパン
-        $latest = \App\Page::orderBy('updated_at', 'desc')->first();
-        $pb = $latest->updated_at->addWeeks(-1);
-        if(isset($req->pb)){
-            $pb = Carbon::parse($req->pb);
-        }
-        $pe = clone $pb;
-        $pe->addWeeks(1);
-        if(isset($req->pe)){
-            $pe = Carbon::parse($req->pe);
-        }
-        if($pe <= $pb){
-            return [];
-        }
-
         if(!isset($req->current)){
             $req->current = 0;
         }else{
             // 添字調整
             $req->current -= 1;
         }
-        $pages = DB::table('pages')
-               ->where('pages.updated_at', '>=', $pb->format('Y-m-d H:i:s'))
-               ->where('pages.updated_at', '<=', $pe->format('Y-m-d H:i:s'));
+        $pages = DB::table('pages');
+
+        if(isset($req->pb) && isset($req->pe)){
+            $pb = Carbon::parse($req->pb);
+            $pe = Carbon::parse($req->pe);
+            if($pe < $pb){
+                return [];
+            }
+            $pages = $pages->where('pages.updated_at', '>=', $pb->format('Y-m-d H:i:s'))
+                           ->where('pages.updated_at', '<=', $pe->format('Y-m-d H:i:s'));
+        }
+
         $searchResult = array();
         // 全角スペースを半角スペースに置換する。
         $req->q = preg_replace('/　/', ' ', $req->q);

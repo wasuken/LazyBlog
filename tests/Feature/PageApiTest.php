@@ -272,7 +272,7 @@ class PageApiTest extends TestCase
         }
         $this->assertTrue(true);
     }
-    public function testApiPageQuerySortKeyOrder()
+    public function testApiPageQuerySortKeyOrderPageView()
     {
         $params = [
             'q' => 'af',
@@ -310,6 +310,47 @@ class PageApiTest extends TestCase
                 $this->assertTrue(false);
             }
             $lastValue = $v['cnt'];
+        }
+        $this->assertTrue(true);
+    }
+    public function testApiPageQuerySortKeyOrderDate()
+    {
+        $params = [
+            'q' => 'af',
+            'tag' => 'JavaScript',
+            'order' => 'desc',
+            'sortKey' => 'date',
+        ];
+        $j = $this->apiGetBaseResponse($params)->decodeResponseJson();
+        $status = 0;
+        if(array_key_exists('status', $j)){
+            $status = $j['status'];
+        }
+        $this->assertEquals(0, $status);
+
+        $lastValue = Carbon::parse('2100-01-01');
+        foreach($j['data'] as $v){
+            if($lastValue < Carbon::parse($v['updated_at'])){
+                $this->assertTrue(false);
+            }
+            $lastValue = Carbon::parse($v['updated_at']);
+        }
+        $this->assertTrue(true);
+
+        $params['order'] = 'asc';
+        $j = $this->apiGetBaseResponse($params)->decodeResponseJson();
+        $status = 0;
+        if(array_key_exists('status', $j)){
+            $status = $j['status'];
+        }
+        $this->assertEquals(0, $status);
+
+        $lastValue = Carbon::parse('1990-01-01');
+        foreach($j['data'] as $v){
+            if($lastValue > Carbon::parse($v['updated_at'])){
+                $this->assertTrue(false);
+            }
+            $lastValue = Carbon::parse($v['updated_at']);
         }
         $this->assertTrue(true);
     }
