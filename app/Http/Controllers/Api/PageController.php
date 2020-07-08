@@ -15,7 +15,7 @@ class PageController extends Controller
         if(empty($maxId)){
             return [];
         }
-        $req->validate([
+        $validator = \Validator::make($req->all(), [
             // 検索に使うクエリ
             'q' => 'min:1|max:200',
             // タグ検索に引っかかったものを優先的に表示する
@@ -29,12 +29,18 @@ class PageController extends Controller
             // 最大件数(100まで)
             'count' => 'integer|min:1|max:100',
             // ページ数。currentの分だけ検索結果の先頭を無視する
-            'current' => 'integer',
+            'current' => 'integer|min:1',
             // pbで指定された日付以上の日付を持つ記事を対象にする。
             'pb' => 'date',
             // peで指定された日付以下の日付を持つ記事を対象にする。
             'pe' => 'date',
         ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'errors' => $validator->errors()
+            ], 400);
+        }
 
         if(!isset($req->count)){
             $req->count = 30;
@@ -191,13 +197,19 @@ class PageController extends Controller
     //
     public function store(Request $req)
     {
-        $req->validate([
+        $validator = \Validator::make($req->all(), [
             'title' => 'required|min:1|max:200|unique:pages,title',
             'body' => 'required|min:1',
             'tags' => 'array',
             'token' => 'required|exists:users,api_token',
             'type' => 'in:md,html',
         ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'errors' => $validator->errors()
+            ], 400);
+        }
         if(!isset($req->type)){
             $req->type = "html";
         }

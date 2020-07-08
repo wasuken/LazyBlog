@@ -140,4 +140,115 @@ class PageApiTest extends TestCase
         $this->assertEquals(count($this->apiGetBaseResponse($params)->decodeResponseJson()), 0);
         $this->setup();
     }
+    public function simpleRequestCheck($params, $expectStatusCode)
+    {
+        $j = $this->apiGetBaseResponse($params)->decodeResponseJson();
+        $status = 0;
+        if(array_key_exists('status', $j)){
+            $status = $j['status'];
+        }
+
+        $this->assertEquals($expectStatusCode, $status);
+    }
+    public function simpleRequestChecks($dataSet)
+    {
+        foreach($dataSet as $v){
+            $this->simpleRequestCheck($v[0], $v[1]);
+        }
+    }
+    public function testApiPageQuery()
+    {
+        $this->simpleRequestChecks([
+            [['q' => ''], 400],
+            [['q' => Str::random(201)], 400],
+            [['q' => Str::random(50)], 0],
+        ]);
+    }
+    public function testApiPageTag()
+    {
+        $this->simpleRequestChecks([
+            [['tag' => ''], 400],
+            [['tag' => Str::random(201)], 400],
+            [['tag' => Str::random(50)], 0],
+        ]);
+    }
+    public function testApiPageWriter()
+    {
+        $this->simpleRequestChecks([
+            [['writer' => ''], 400],
+            [['writer' => Str::random(201)], 400],
+            [['writer' => Str::random(50)], 0],
+        ]);
+    }
+    public function testApiPageSortKey()
+    {
+        $this->simpleRequestChecks([
+            [['sortKey' => ''], 400],
+            [['sortKey' => Str::random(40)], 400],
+            [['sortKey' => 'pageView'], 0],
+            [['sortKey' => 'date'], 0],
+        ]);
+    }
+    public function testApiPageOrder()
+    {
+        $this->simpleRequestChecks([
+            [['order' => ''], 400],
+            [['order' => Str::random(40)], 400],
+            [['order' => 'asc'], 0],
+            [['order' => 'desc'], 0],
+        ]);
+    }
+    public function testApiPageCount()
+    {
+        $this->simpleRequestChecks([
+            [['count' => ''], 400],
+            [['count' => 0], 400],
+            [['count' => 101],400],
+            [['count' => Str::random(20) . 'z'],400],
+            [['count' => 50], 0],
+        ]);
+    }
+    public function testApiPageCurrent()
+    {
+        $this->simpleRequestChecks([
+            [['current' => ''], 400],
+            [['current' => 0], 400],
+            [['current' => 1],0],
+        ]);
+        $params = [
+            'current' => '',
+        ];
+        // 空白はエラー
+        $status = $this->apiGetBaseResponse($params)->decodeResponseJson()['status'] || 0;
+        $this->assertEquals(400, $status);
+
+        // 正常値
+        $params['count'] = 50;
+        $status = $this->apiGetBaseResponse($params)->decodeResponseJson()['status'] || 0;
+        $this->assertEquals(400, $status);
+    }
+    public function testApiPagePb()
+    {
+        $this->simpleRequestChecks([
+            [['pb' => ''], 400],
+            [['pb' => Str::random(40) .  "^1230kdsal;3"], 400],
+            [['pb' => '2019-07-07'], 0],
+        ]);
+    }
+    public function testApiPagePe()
+    {
+        $this->simpleRequestChecks([
+            [['pe' => ''], 400],
+            [['pe' => Str::random(40) .  "^1230kdsal;3"], 400],
+            [['pe' => '2019-08-07'], 0],
+        ]);
+    }
+        public function testApiPagePbPe()
+    {
+        $this->simpleRequestChecks([
+            [['pb' => '', 'pe' => '2019-08-07'], 400],
+            [['pb' => Str::random(40) .  "^1230kdsal;3", 'pe' => '2019-08-07'], 400],
+            [['pb' => '2019-07-07', 'pe' => '2019-08-07'], 0],
+        ]);
+    }
 }

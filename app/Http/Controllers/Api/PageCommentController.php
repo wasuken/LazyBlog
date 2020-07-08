@@ -15,9 +15,15 @@ class PageCommentController extends Controller
     public function index(Request $req)
     {
         //
-        $req->validate([
+        $validator = \Validator::make($req->all(), [
             'order' => 'in:asc,desc',
         ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'errors' => $validator->errors()
+            ], 400);
+        }
         if(!isset($req->order)){
             $req->order = 'desc';
         }
