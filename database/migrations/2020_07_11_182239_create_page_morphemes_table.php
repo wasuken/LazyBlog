@@ -18,6 +18,9 @@ class CreatePageMorphemesTable extends Migration
 
             $table->bigInteger('morpheme_id');
             $table->bigInteger('page_id');
+            $table->double('tf');
+            $table->double('idf');
+            $table->double('score');
 
             $table->timestamps();
         });

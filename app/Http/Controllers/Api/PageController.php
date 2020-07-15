@@ -23,7 +23,7 @@ class PageController extends Controller
             // 記事投稿者で検索を行う。
             'writer' => 'min:1|max:200',
             // ソートに使うキー
-            'sortKey' => 'in:pageView,date',
+            'sortKey' => 'in:pageView,date,match',
             // 並び順
             'order' => 'in:asc,desc',
             // 最大件数(100まで)
@@ -65,8 +65,6 @@ class PageController extends Controller
         }
 
         $searchResult = array();
-        // 全角スペースを半角スペースに置換する。
-        $req->q = preg_replace('/　/', ' ', $req->q);
         $idList = array();
         if(!isset($req->tag)){
             $req->tag = '';
@@ -77,9 +75,6 @@ class PageController extends Controller
         $req->tag = preg_replace('/　/', ' ', $req->tag);
         $tagList = array_filter(preg_split('/\s+/', $req->tag),
                                 function($x){ return !empty($x);});
-        // or検索だけ実装する。
-        $words = array_filter(preg_split('/\s+/', $req->q),
-                              function($x){ return !empty($x);});
         if(!empty($tagList)){
             $pages = $pages->join('page_tags', 'page_tags.page_id', 'pages.id')
                            ->join('tags', 'tags.id', 'page_tags.tag_id')
@@ -91,20 +86,8 @@ class PageController extends Controller
                            ->where('users.name', $req->writer)
                            ->select('pages.*');
         }
-        if(!empty($words)){
-            foreach($words as $word){
-                $likeQuery = '%' . mb_strtolower($word) . '%';
-                $wSearch = $pages->where('body', 'like', $likeQuery);
-                // grep検索
-                // 絶対遅い
-                foreach($wSearch->get() as $page){
-                    $id = $page->id;
-                    if(array_search($id, $idList) === false){
-                        $searchResult = array_merge($searchResult, array($page));
-                        $idList = array_merge($idList, array($id));
-                    }
-                }
-            }
+        if(!empty($req->q)){
+            $searchResult = \App\PageMorpheme::search($req->q, $pages);
         }else{
             foreach($pages->get() as $page){
                 $id = $page->id;
@@ -152,6 +135,8 @@ class PageController extends Controller
             usort($searchResultExtend, function($a, $b){
                 return $a['cnt'] <=> $b['cnt'];
             });
+            break;
+        case 'match':
             break;
         }
 
@@ -216,7 +201,9 @@ class PageController extends Controller
             'body' => $req->type === "html" ? $req->body : $parser->parse($req->body),
             'user_id' => \App\User::where('api_token', $req->token)->first()->id,
         ]);
+        \App\PageMorpheme::insertBodyDecomposeWords($page);
         \App\Tag::tagsCreate($req->tags, $page->id);
+        \App\Jobs\ProcessScoring::dispatch();
         return ['id'=> $page->id,
                 'title' => $page->title,
                 'body' => $page->body,];
@@ -257,8 +244,13 @@ class PageController extends Controller
         }
 
         if(isset($req->title)) $page->title = $req->title;
-        if(isset($req->body)) $page->body = $req->type === "html" ? $req->body : $parser->parse($req->body);
+        if(isset($req->body)) {
+            $page->body = $req->type === "html" ? $req->body : $parser->parse($req->body);
+            \App\PageMorpheme::where('page_id', $id)->delete();
+        }
         $page->save();
+        \App\PageMorpheme::insertBodyDecomposeWords($page);
+        \App\Jobs\ProcessScoring::dispatch();
 
         if(isset($req->tags)){
              \App\PageTag::where('page_id', $page->id)->delete();

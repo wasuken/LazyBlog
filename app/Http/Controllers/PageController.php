@@ -72,7 +72,9 @@ class PageController extends Controller
             'body' => $req->type === "html" ? $req->body : $parser->parse($req->body),
             'user_id' => Auth::user()->id,
         ]);
+        \App\PageMorpheme::insertBodyDecomposeWords($page);
         \App\Tag::tagsCreate($req->tags, $page->id);
+        \App\Jobs\ProcessScoring::dispatch();
         return redirect('/');
     }
 }

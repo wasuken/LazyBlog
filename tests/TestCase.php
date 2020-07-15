@@ -22,6 +22,11 @@ abstract class TestCase extends BaseTestCase
         $this->seed("PageTagsTableSeeder");
         $this->seed("PageAccessLogsTableSeeder");
         $this->user = \App\User::where('name', 'test_admin')->first();
+        // \App\PageMorpheme::
+        $pages = \App\Page::all();
+        foreach($pages as $page){
+            \App\PageMorpheme::insertBodyDecomposeWords($page);
+        }
     }
     protected function createPostDataTable()
     {
