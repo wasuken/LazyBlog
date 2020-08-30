@@ -39,7 +39,7 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-      - run: sudo apt-get update && sudo apt-get -y install mecab libmecab-dev mecab-ipadic-utf8 && git clone https://github.com/rsky/php-mecab.git && cd php-mecab/mecab/ && phpize && ./configure && make && sudo make install && sudo php -r "\$h=fopen('/usr/local/etc/php/php.ini-development','a');fwrite(\$h,'extension=mecab.so'.\"\n\");";
+      - run: sudo apt-get update && sudo apt-get -y install mecab libmecab-dev mecab-ipadic-utf8 && git clone https://github.com/rsky/php-mecab.git && cd php-mecab/mecab/ && phpize && ./configure && make && sudo make install && sudo php -r "\$h=fopen('/usr/local/etc/php/conf.d/docker-php-ext-mecab.ini','a');fwrite(\$h,'extension=mecab.so'.\"\n\");";
 
       - run: composer install -n --prefer-dist
 
