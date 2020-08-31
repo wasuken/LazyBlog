@@ -2784,6 +2784,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 
 
@@ -2794,6 +2797,17 @@ __webpack_require__.r(__webpack_exports__);
     searchArea: _SearchArea__WEBPACK_IMPORTED_MODULE_1__["default"],
     tags: _TagList__WEBPACK_IMPORTED_MODULE_2__["default"],
     miniSR: _MiniSearchResult__WEBPACK_IMPORTED_MODULE_3__["default"]
+  },
+  methods: {
+    concatWeeklyStr: function concatWeeklyStr(query) {
+      var before = new Date();
+      var after = new Date();
+      before.setDate(before.getDate() - 7);
+      var bDateFmt = [before.getFullYear(), ("0" + (before.getMonth() + 1)).slice(-2), ("0" + before.getDate()).slice(-2)].join("-");
+      after.setDate(after.getDate() + 1);
+      var aDateFmt = [after.getFullYear(), ("0" + (after.getMonth() + 1)).slice(-2), ("0" + after.getDate()).slice(-2)].join("-");
+      return query + "&pb=" + bDateFmt + "&pe=" + aDateFmt;
+    }
   }
 });
 
@@ -67652,8 +67666,24 @@ var render = function() {
           [
             _c("miniSR", {
               attrs: {
-                title: "Most Popular Top 10",
+                title: "Top 10 Most Popular",
                 query: "sortKey=pageView&order=desc&count=10"
+              }
+            })
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "box" },
+          [
+            _c("miniSR", {
+              attrs: {
+                title: "Top 10 Most Popular Weekly",
+                query: _vm.concatWeeklyStr(
+                  "sortKey=pageView&order=desc&count=10"
+                )
               }
             })
           ],

@@ -54,15 +54,26 @@ class PageController extends Controller
         }
         $pages = DB::table('pages');
 
-        if(isset($req->pb) && isset($req->pe)){
-            $pb = Carbon::parse($req->pb);
-            $pe = Carbon::parse($req->pe);
-            if($pe < $pb){
-                return [];
+        if(!(isset($req->pb) && isset($req->pe))){
+            if(!isset($req->pb)){
+                $req->pb = Carbon::parse(\App\PageAccesslog::min('updated_at'))
+                         ->format('Y-m-d H:i:s');
             }
-            $pages = $pages->where('pages.updated_at', '>=', $pb->format('Y-m-d H:i:s'))
-                           ->where('pages.updated_at', '<=', $pe->format('Y-m-d H:i:s'));
+            if(!isset($req->pe)){
+               $req->pe = Carbon::parse(\App\PageAccesslog::max('updated_at'))
+                         ->format('Y-m-d H:i:s');
+            }
         }
+
+        // if(isset($req->pb) && isset($req->pe)){
+        //     $pb = Carbon::parse($req->pb);
+        //     $pe = Carbon::parse($req->pe);
+        //     if($pe < $pb){
+        //         return [];
+        //     }
+        //     $pages = $pages->where('pages.updated_at', '>=', $pb->format('Y-m-d H:i:s'))
+        //                    ->where('pages.updated_at', '<=', $pe->format('Y-m-d H:i:s'));
+        // }
 
         $searchResult = array();
         $idList = array();
@@ -116,8 +127,10 @@ class PageController extends Controller
 
         // ページ閲覧数を算出する。
         foreach($searchResult as $v){
-            $count = \App\PageAccessLog::where('url', 'like',
-                                               '%page?id=' . $v->id . '%')
+            $count = 0;
+            $count = \App\PageAccessLog::whereBetween('updated_at', [$req->pb, $req->pe])
+                   ->where('url', 'like',
+                           '%page?id=' . $v->id . '%')
                    ->count();
             $searchResultExtend = array_merge($searchResultExtend,
                                               array(array('id' => $v->id,
@@ -127,8 +140,8 @@ class PageController extends Controller
 
         switch($req->sortKey){
         case 'date':
-            usort($searchResult, function($a, $b){
-                return Carbon::parse($a->updated_at) <=> Carbon::parse($b->updated_at);
+            usort($searchResultExtend, function($a, $b){
+                return Carbon::parse($a['data']->updated_at) <=> Carbon::parse($b['data']->updated_at);
             });
             break;
         case 'pageView':

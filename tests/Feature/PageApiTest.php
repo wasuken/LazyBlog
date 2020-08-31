@@ -15,7 +15,7 @@ use Carbon\Carbon;
 class PageApiTest extends TestCase
 {
     use RefreshDatabase;
-    public function testPageApiPost()
+    public function testPost()
     {
         $token = $this->user->api_token;
         $post_data_table = $this->createPostDataTable();
@@ -32,7 +32,7 @@ class PageApiTest extends TestCase
             ]);
         }
     }
-    public function testPageApiPostFail()
+    public function testPostFail()
     {
         $token = $this->user->api_token;
         $post_data_table = $this->createPostDataTable();
@@ -124,9 +124,9 @@ class PageApiTest extends TestCase
             }
         }
         $this->assertTrue(true);
-        $params['pb'] = '2019-12-30';
+        $params['pb'] = '2090-12-30';
         $this->assertEquals(count($this->apiGetBaseResponse($params)
-                                       ->decodeResponseJson()), 0);
+                                       ->decodeResponseJson()["data"]), 0);
         foreach(\App\Page::all() as $x){
             $x->delete();
         }
@@ -354,7 +354,7 @@ class PageApiTest extends TestCase
         }
         $this->assertTrue(true);
     }
-    public function testPageApiUpdatePage()
+    public function testUpdatePage()
     {
         $page = \App\Page::all()->first();
         $token = \App\User::find($page->user_id)->api_token;

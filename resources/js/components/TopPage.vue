@@ -14,7 +14,10 @@
 	  <tags></tags>
 	</div>
 	<div class="box">
-	  <miniSR title="Most Popular Top 10" query="sortKey=pageView&order=desc&count=10"></miniSR>
+	  <miniSR title="Top 10 Most Popular" query="sortKey=pageView&order=desc&count=10"></miniSR>
+	</div>
+	<div class="box">
+	  <miniSR title="Top 10 Most Popular Weekly" :query="concatWeeklyStr('sortKey=pageView&order=desc&count=10')"></miniSR>
 	</div>
   </div>
 </div>
@@ -30,6 +33,21 @@ export default{
 		searchArea,
 		tags,
 		miniSR,
+	},
+	methods:{
+		concatWeeklyStr: function(query){
+			let before = new Date();
+			let after = new Date();
+			before.setDate(before.getDate() - 7);
+			let bDateFmt = [before.getFullYear(),
+							("0" + (before.getMonth() + 1)).slice(-2),
+							("0" + before.getDate()).slice(-2)].join("-");
+			after.setDate(after.getDate() + 1);
+			let aDateFmt = [after.getFullYear(),
+							("0" + (after.getMonth() + 1)).slice(-2),
+							("0" + after.getDate()).slice(-2)].join("-");
+			return query + "&pb=" + bDateFmt + "&pe=" + aDateFmt;
+		}
 	}
 }
 </script>
