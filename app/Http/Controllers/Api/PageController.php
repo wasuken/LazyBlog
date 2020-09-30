@@ -236,6 +236,7 @@ class PageController extends Controller
             'type' => 'in:md,html',
             'token' => 'required|exists:users,api_token'
         ]);
+	
         if ($validator->fails()) {
             return response()->json([
                 'status' => 400,
